@@ -1,0 +1,15 @@
+server:
+  address:     ":8000"
+  openapiPath: "/api.json"
+  swaggerPath: "/swagger"
+
+logger:
+  level : "all"
+  stdout: true
+
+# 巡检结果存储数据库
+database:
+  default:
+    link:   "sqlite::@file(manifest/db/user.db)"
+    debug:  true
+
