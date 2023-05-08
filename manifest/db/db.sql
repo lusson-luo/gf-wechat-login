@@ -8,4 +8,4 @@ CREATE TABLE IF NOT EXISTS user(
     update_at datetime(0) DEFAULT NULL --  'Updated Time'
 );
 
-INSERT INTO user(passport, password, nickname, create_at, update_at) VALUES ('admin', 'admin', '管理员', datetime('now'), datetime('now'));
+INSERT INTO user(passport, password, nickname, create_at, update_at) VALUES ('admin', '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', '管理员', datetime('now'), datetime('now'));

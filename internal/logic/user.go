@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"login-demo/internal/dao"
+	"login-demo/internal/model"
 	"login-demo/internal/model/do"
 	"login-demo/internal/model/entity"
 	"strings"
@@ -16,6 +17,7 @@ import (
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
 	"github.com/gogf/gf/v2/os/gctx"
+	"github.com/gogf/gf/v2/os/gtime"
 )
 
 type LogicUser struct {
@@ -27,34 +29,24 @@ var (
 
 // Login 登录
 func (lu *LogicUser) Login(ctx context.Context, username string, password string) (role string, token string, err error) {
+	// 计算密码哈希值
+	passwordHash := fmt.Sprintf("%x", sha256.Sum256([]byte(password)))
 	// 查询用户信息
-	user, err := dao.User.Ctx(ctx).One("passport=? and password=?", username, fmt.Sprintf("%x", sha256.Sum256([]byte(password))))
-	if err != nil {
+	user, err := dao.User.Ctx(ctx).One("passport=? and password=?", username, passwordHash)
+	switch {
+	case err != nil:
 		return "", "", err
+	case user == nil:
+		return "", "", errors.New("账户或密码错误")
+	default:
+		// 生成 jwt token
+		token, err = MyJwt.GenerateToken(ctx, username)
+		if err != nil {
+			return "", "", err
+		}
+		// todo: 暂时没有 role
+		return "", token, nil
 	}
-	if user == nil {
-		err = errors.New("账户或密码错误")
-		return "", "", err
-	}
-	// var user *entity.User
-	// err = dao.User.Ctx(ctx).Where(do.User{
-	// 	Passport: username,
-	// 	Password: password,
-	// }).Scan(&user)
-	// if err != nil {
-	// 	return
-	// }
-	// if user == nil {
-	// 	err = errors.New("账户或密码错误")
-	// 	return
-	// }
-	// 生成 jwt token
-	token, err = MyJwt.GenerateToken(ctx, username)
-	if err != nil {
-		return "", "", err
-	}
-	// todo: 暂时没有 role
-	return "", token, nil
 }
 
 // IsSignedIn 检查是否已经登录
@@ -63,8 +55,7 @@ func (lu *LogicUser) IsSignedIn(ctx context.Context, r *ghttp.Request) bool {
 	if !exist {
 		return false
 	}
-	valid := MyJwt.Valid(r.Context(), token)
-	return valid
+	return MyJwt.Valid(r.Context(), token)
 }
 
 // Parse 解析 jwt token
@@ -131,4 +122,31 @@ func (*LogicUser) InitAdmin(ctx context.Context) {
 func init() {
 	ctx := gctx.New()
 	User.InitAdmin(ctx)
+}
+
+func (*LogicUser) UserList(ctx context.Context, username string, page model.PageReq) (users []entity.User, count int) {
+	dao.User.Ctx(ctx).WhereLike("passport", fmt.Sprintf("%%%s%%", username)).Page(page.PageNo, page.PageSize).Scan(&users)
+	count, _ = dao.User.Ctx(ctx).Count("passport like ?", fmt.Sprintf("%%%s%%", username))
+	return
+}
+
+func (*LogicUser) Add(ctx context.Context, user do.User) (err error) {
+	// 计算密码哈希值
+	passwordHash := fmt.Sprintf("%x", sha256.Sum256([]byte(user.Password.(string))))
+	user.CreateAt, user.UpdateAt, user.Password = gtime.New(), gtime.New(), passwordHash
+	_, err = dao.User.Ctx(ctx).Insert(user)
+	return
+}
+
+func (*LogicUser) Del(ctx context.Context, id int) (err error) {
+	_, err = dao.User.Ctx(ctx).Delete("id = ?", id)
+	return
+}
+
+func (*LogicUser) Update(ctx context.Context, user do.User) (err error) {
+	// 计算密码哈希值
+	passwordHash := fmt.Sprintf("%x", sha256.Sum256([]byte(user.Password.(string))))
+	user.UpdateAt, user.Password = gtime.New(), passwordHash
+	_, err = dao.User.Ctx(ctx).Update(user, "id = ?", user.Id)
+	return
 }

@@ -24,19 +24,16 @@ var (
 					middleware.ParseJwtToCtx,
 				)
 				// 绑定 Login 结构体中的 Login 方法
-				group.POST("/login", new(controller.Login).Login)
-				group.Bind(
-				// controller.Login,
-				)
+				group.POST("", new(controller.Login).Login)
+				group.Bind()
 				group.Group("/", func(group *ghttp.RouterGroup) {
 					group.Middleware(middleware.Auth)
-					group.POST("/refresh", new(controller.Login).Refresh)
+					group.POST("", new(controller.Login).Refresh)
 					group.Bind(
-					// controller.Login;
+						&controller.StationController{},
+						&controller.UserController{},
 					)
 				})
-				// group.POST("/login", controller.Login.Login, middleware.ParseJwtToCtx)
-				// group.POST("/refresh", controller.Login.Refresh, middleware.ParseJwtToCtx, middleware.Auth)
 			})
 			s.Run()
 			return nil

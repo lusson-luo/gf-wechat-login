@@ -4,20 +4,24 @@ import (
 	"context"
 	"time"
 
+	"github.com/gogf/gf/v2/frame/g"
 	"github.com/golang-jwt/jwt"
 )
 
 type LogicJwt struct {
 }
 
-const (
-	ExpiresTime = time.Hour * 1
+var (
+	MyJwt       LogicJwt = LogicJwt{}
+	JwtSecret   []byte   = []byte("123456")
+	ExpiresTime          = time.Minute * 1 // 默认1分钟
 )
 
-var (
-	MyJwt     LogicJwt = LogicJwt{}
-	JwtSecret []byte   = []byte("123456")
-)
+func init() {
+	val, _ := g.Cfg().Get(context.Background(), "tokenAliveTime")
+	tokenAlive := val.Int()
+	ExpiresTime = time.Minute * time.Duration(tokenAlive)
+}
 
 type MyClaims struct {
 	Username string `json:"username"`
@@ -26,6 +30,7 @@ type MyClaims struct {
 
 // GenerateToken 生成 jwt 格式 token
 func (LogicJwt) GenerateToken(ctx context.Context, username string) (token string, err error) {
+	print("ExpiresTime", ExpiresTime)
 	tokenHeader := jwt.NewWithClaims(jwt.SigningMethodHS256, &MyClaims{
 		Username: username,
 		StandardClaims: jwt.StandardClaims{
@@ -42,11 +47,7 @@ func (LogicJwt) Valid(ctx context.Context, token string) (valid bool) {
 	tkn, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
 		return JwtSecret, nil
 	})
-	if err != nil {
-		valid = false
-	} else {
-		valid = tkn.Valid
-	}
+	valid = (err == nil) && tkn.Valid
 	return
 }
 
@@ -56,10 +57,6 @@ func (LogicJwt) Parse(ctx context.Context, token string) (claims *MyClaims, vali
 	_, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
 		return JwtSecret, nil
 	})
-	if err != nil {
-		valid = false
-	} else {
-		valid = true
-	}
+	valid = err == nil
 	return
 }
