@@ -76,17 +76,17 @@ func (*LogicUser) InitAdmin(ctx context.Context) {
 	}
 }
 
-func (*LogicUser) UserList(ctx context.Context, username string, page model.PageReq) (users []entity.User, count int) {
-	dao.User.Ctx(ctx).WhereLike("passport", fmt.Sprintf("%%%s%%", username)).Page(page.PageNo, page.PageSize).Scan(&users)
-	count, _ = dao.User.Ctx(ctx).Count("passport like ?", fmt.Sprintf("%%%s%%", username))
+func (*LogicUser) UserList(ctx context.Context, username string, page model.PageReq) (users []model.UserMore, count int, err error) {
+	err = dao.User.Ctx(ctx).LeftJoin("user_wallet", "user.id = user_wallet.user_id").Fields("user.*, user_wallet.balance").WhereLike("passport", fmt.Sprintf("%%%s%%", username)).Page(page.PageNo, page.PageSize).ScanAndCount(&users, &count, false)
 	return
 }
 
-func (*LogicUser) Add(ctx context.Context, user do.User) (err error) {
+func (*LogicUser) Add(ctx context.Context, user *do.User) (err error) {
 	// 计算密码哈希值
 	passwordHash := fmt.Sprintf("%x", sha256.Sum256([]byte(user.Password.(string))))
-	user.CreateAt, user.UpdateAt, user.Password = gtime.New(), gtime.New(), passwordHash
-	_, err = dao.User.Ctx(ctx).Insert(user)
+	user.CreateAt, user.UpdateAt, user.Password = gtime.Now(), gtime.Now(), passwordHash
+	id, err := dao.User.Ctx(ctx).InsertAndGetId(user)
+	user.Id = id
 	return
 }
 
@@ -98,7 +98,7 @@ func (*LogicUser) Del(ctx context.Context, id int) (err error) {
 func (*LogicUser) Update(ctx context.Context, user do.User) (err error) {
 	// 计算密码哈希值
 	passwordHash := fmt.Sprintf("%x", sha256.Sum256([]byte(user.Password.(string))))
-	user.UpdateAt, user.Password = gtime.New(), passwordHash
+	user.UpdateAt, user.Password = gtime.Now(), passwordHash
 	_, err = dao.User.Ctx(ctx).Update(user, "id = ?", user.Id)
 	return
 }

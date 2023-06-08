@@ -119,6 +119,8 @@ gf gen dao
 
 将 _test.go 放在 controller 下，进入目录执行 go test 显示数据库驱动 sqlite 找不到。单元测试中并没有数据库连接，怀疑编译了 controller 文件。
 
+就算 controller 增加 sqlite 驱动也不能启动。
+
 ## 4. 如何出 window 包
 
 ```
@@ -126,6 +128,24 @@ env CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o login.exe main.go
 打包配置文件和数据库文件
 zip login.zip login.exe manifest/config/config.yaml manifest/db/user.db
 ```
+
+
+## 5. dao 根据传入的查询条件动态增加对应的查询项
+
+通过动态增加 where 并重新赋值的方式。
+
+``` 
+model := dao.Pile.Ctx(ctx).LeftJoin("station", "station.id = pile.station_id")
+if query.StationId != 0 {
+    model = model.Where("pile.station_id = ?", query.StationId)
+}
+if query.Code != "" {
+    model = model.Where("pile.code like ?", fmt.Sprintf("%%%s%%", query.Code))
+}
+count, err = model.Count()
+```
+
+## 6. gf 如何进行查询翻页
 
 # 四、 附录: GoFrame 
 

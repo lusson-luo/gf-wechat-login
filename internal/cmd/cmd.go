@@ -24,12 +24,32 @@ var (
 				// 绑定 Login 结构体中的 Login 方法
 				group.POST("", new(controller.Login).Login)
 				group.Bind()
-				group.Group("/", func(group *ghttp.RouterGroup) {
+				group.Group("", func(group *ghttp.RouterGroup) {
 					group.Middleware(middleware.Auth)
 					group.POST("", new(controller.Login).Refresh)
 					group.Bind(
 						&controller.UserController{},
+						&controller.PileController{},
+						&controller.ChargeOrderController{},
+						&controller.ChargePriceController{},
+						&controller.UserPayController{},
 					)
+				})
+				// group.POST("", new(controller.WxLoginController).Login)
+				group.Bind(
+					&controller.WxLoginController{},
+				)
+				group.GET("", new(controller.WxChargeController).StationList)
+				group.GET("", new(controller.WxChargeController).PileList)
+				group.Group("", func(group *ghttp.RouterGroup) {
+					group.Middleware(middleware.Auth)
+					// group.Bind(
+					// 	&controller.WxChargeController{},
+					// )
+					group.POST("", new(controller.WxChargeController).StartCharge)
+					group.POST("", new(controller.WxChargeController).MyChargeOrders)
+					group.POST("", new(controller.WxChargeController).AboutMe)
+					group.POST("", new(controller.WxChargeController).StopCharge)
 				})
 			})
 			logic.User.InitAdmin(ctx)

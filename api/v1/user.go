@@ -18,6 +18,7 @@ type UserListRes struct {
 	Id         int       `json:"id"`
 	Username   string    `json:"username"`
 	Nickname   string    `json:"nickname"`
+	Balance    float64   `json:"balance"  ` //
 	CreateTime time.Time `json:"createTime"`
 }
 

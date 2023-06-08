@@ -15,13 +15,14 @@ func (UserController) List(ctx context.Context, req *v1.UserListReq) (pageRes mo
 	res := &[]v1.UserListRes{}
 	// 初始化分页参数，设置默认值
 	model.InitPageReq(&req.PageReq, 1, 10)
-	userList, count := logic.User.UserList(ctx, req.Username, req.PageReq)
+	userList, count, err := logic.User.UserList(ctx, req.Username, req.PageReq)
 	for _, v := range userList {
 		userRes := v1.UserListRes{
 			Id:         v.Id,
 			Username:   v.Passport,
 			Nickname:   v.Nickname,
-			CreateTime: v.CreateAt.Time,
+			Balance:    v.Balance,
+			CreateTime: v.CreateAt,
 		}
 		tmp := append(*res, userRes)
 		res = &tmp
@@ -37,7 +38,7 @@ func (UserController) Add(ctx context.Context, req *v1.UserAddReq) (res *v1.User
 		Nickname: req.Nickname,
 		Password: req.Password,
 	}
-	err = logic.User.Add(ctx, user)
+	err = logic.User.Add(ctx, &user)
 	return
 }
 
