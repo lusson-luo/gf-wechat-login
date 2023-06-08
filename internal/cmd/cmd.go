@@ -30,7 +30,6 @@ var (
 					group.Middleware(middleware.Auth)
 					group.POST("", new(controller.Login).Refresh)
 					group.Bind(
-						&controller.StationController{},
 						&controller.UserController{},
 					)
 				})
