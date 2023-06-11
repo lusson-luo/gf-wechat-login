@@ -1,24 +1,39 @@
-# 一、 项目介绍
+# 一、 Go 定开外挂脚手架项目介绍
 go 的 web 脚手架项目。
 
 技术栈 goframe 2.x，使用 sqlite 文件数据库。
 
 包含功能有
 - 登录，token 刷新，用户的增删改查
+- 获得 Coding 项目列表
 
 ## 1.1 登录
 
 登录采用 JWT 方式，登录成功生成 jwt 格式 token，其他接口会效验 token 是否有效（从 jwt 的层面，不额外查表），jwt 是分布式有效的，所以 token 不用存储，服务是无状态的。可以通过 manifest/config/config.yaml 中的配置修改 token 的存活时长。
 
+## 1.2 获得 Coding 项目列表
+
+请求 Coding openAPI，获得项目列表
+
 # 二、 快速开始
 
-## 2.1 运行
+## 2.1 Coding 配置
+
+修改 manifest/config/config.yaml 文件，填写Coding的租户url和个人令牌。
+
+> 个人令牌的创建参照 https://coding.net/help/openapi#%E5%9F%BA%E7%A1%80%E8%B7%AF%E5%BE%84 个人令牌认证。
+
+## 2.2 本地运行
 
 ```
 go run main.go
 ```
 
-## 2.2 验证
+依赖 go 版本 1.19 以上
+
+## 2.3 验证接口可用性
+
+### 2.3.1 验证登录接口
 
 本地执行 
 ```
@@ -32,13 +47,34 @@ curl --location 'http://127.0.0.1:8000/api/user/login' \
 {"code":0,"message":"","data":{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjg2MjE0MTgzfQ.WZV1YvwzokEgDL1urWYoUPpfWSsq3TisO3f6zutmjf4","role":""}}
 ```
 
-# 二、 代码结构
+### 2.3.2 验证获得租户下项目列表
 
-## 2.1 项目框架
+将登录获得的 token，放入 header 中 token 的地方
+```
+curl --location '127.0.0.1:8000/api/project/list' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjg2NDkxODkwfQ.SVmoGjSUfNXanFXUXoKEARGy3dJQKH3sXWAJ37VdRxA'
+```
 
-### 2.1.1 总体项目结构
+获得返回
+```
+{
+    "code": 0,
+    "message": "",
+    "data": {
+        "data": "{\"Response\":{\"RequestId\":\"4a7540cf-8b63-4177-966f-dae6ba4ec1ea\",\"Data\":{\"PageNumber\":1,\"PageSize\":10,\"TotalCount\":1,\"ProjectList\":[{\"Id\":1,\"CreatedAt\":1686225994000,\"UpdatedAt\":1686225994000,\"Status\":1,\"Type\":2,\"MaxMember\":0,\"Name\":\"ff\",\"DisplayName\":\"ff\",\"Description\":\"\",\"Icon\":\"http://e.coding.dev-010.devops-cloud.club/static/project_icon/scenery-version-2-2.svg\",\"TeamOwnerId\":1,\"UserOwnerId\":0,\"StartDate\":0,\"EndDate\":0,\"TeamId\":1,\"IsDemo\":false,\"Archived\":false,\"ProgramIds\":[]}]}}}"
+    }
+}
+```
 
-> 项目结构分为 4个部分，api, hack, internal, manifest, 是 goframe 标准结构。
+data 中的字符串就是 openapi 返回的项目列表，实际开发中转成对应的结构体对象。
+
+# 三、 代码结构
+
+## 3.1 项目框架
+
+### 3.1.1 总体项目结构
+
+> 项目结构分为 4个部分，api, hack, internal, manifest, 是 goframe2.x 标准结构。
 
 简单的介绍一下这几部分的核心功能：
 
@@ -71,31 +107,41 @@ curl --location 'http://127.0.0.1:8000/api/user/login' \
 | go.mod	| 依赖管理	| 使用Go Module包管理的依赖描述文件。| 
 | main.go	| 入口文件	| 程序入口文件。| 
 
-## 2.2 业务封装
+## 3.2 业务功能
 
-### 2.2.1 登录、鉴权
+### 3.2.1 登录、鉴权
 
 - internal/middleware/middleware.go: 提供统一鉴权处理
-- internal/controller/login.go: 提供登录
-- internal/controller/user.go: 提供 token 续签
+- internal/controller/login.go: 提供登录接口
+- internal/controller/user.go: 提供 token 续签以及 user 增删改查接口
+- internal/controller/openapi.go: 提供 Coding openapi 相关接口
 
-# 三、 FAQ
-## 1. 初始化项目失败
+# 四、如何开发
 
-错误信息
+## 4.1 编写 controller 代码
+controller 在 internal/controller 下，参数和返回再 api/v1/ 去定义，包含接口 url 定义
+
+## 4.2 编写 logic 代码
+logic 是业务具体实现，在 internal/logic 下实现。
+
+## 4.3 生成 dao 代码（如果涉及数据库）
+可以通过 gf gen dao 来生成数据库操作，通过 hack/config.yaml 来配置数据库地址和要生成的项目
+
+参考 goframe 框架开发文档和 Coding openapi 开发文档
+
+[goframe 框架开发文档](https://goframe.org/display/gf)
+
+[Coding openapi 开发文档](https://coding.net/help/openapi)
+
+# 五、如何构建
+执行一下命令会构建镜像，并上传到 SaaS 制品库
 ```
-go run main.go
-# github.com/gogf/gf/contrib/drivers/sqlite/v2
-../../../pkg/mod/github.com/gogf/gf/contrib/drivers/sqlite/v2@v2.3.3/sqlite.go:81:12: config.Extra undefined (type *gdb.ConfigNode has no field or method Extra)
-../../../pkg/mod/github.com/gogf/gf/contrib/drivers/sqlite/v2@v2.3.3/sqlite.go:86:40: config.Extra undefined (type *gdb.ConfigNode has no field or method Extra)
-../../../pkg/mod/github.com/gogf/gf/contrib/drivers/sqlite/v2@v2.3.3/sqlite.go:150:22: undefined: gutil.GetOrDefaultStr
+./build.sh
 ```
 
-原因：gdb 版本太老，无法识别 Extra 字段。您可以尝试升级到最新版本的 gdb 包，或者尝试使用其他合适的配置来连接 SQLite 数据库，以解决此问题。
+# 六、 FAQ
 
-解决方案，在 go.sum 中将 github.com/gogf/gf/contrib/drivers/sqlite/v2 升级到 v2.4.0，重新 `go mod tidy`
-
-## 2. 生成 dao 失败
+## 1. 生成 dao 失败
 
 错误信息
 ```
@@ -115,11 +161,7 @@ generated: internal/model/entity/.go
 gf gen dao
 ```
 
-## 3. go test 单元测试失败
-
-将 _test.go 放在 controller 下，进入目录执行 go test 显示数据库驱动 sqlite 找不到。单元测试中并没有数据库连接，怀疑编译了 controller 文件。
-
-## 4. 如何出 window 包
+## 2. 如何出 window 包
 
 ```
 env CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o login.exe main.go
@@ -127,7 +169,7 @@ env CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o login.exe main.go
 zip login.zip login.exe manifest/config/config.yaml manifest/db/user.db
 ```
 
-# 四、 附录: GoFrame 
+# 七、 附录: GoFrame 操作
 
 Project Makefile Commands: 
 - `make cli`: Install or Update to the latest GoFrame CLI tool.

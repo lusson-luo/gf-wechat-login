@@ -31,6 +31,7 @@ var (
 					group.POST("", new(controller.Login).Refresh)
 					group.Bind(
 						&controller.UserController{},
+						&controller.OpenapiController{},
 					)
 				})
 			})

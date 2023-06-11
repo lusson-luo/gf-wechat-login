@@ -21,3 +21,8 @@ admin:
 
 # 登录 token 存活时间，单位分钟
 tokenAliveTime: 120
+
+# Coding 个人令牌
+coding-openapi:
+  token: 2ad26b32e126ade248ba7222cdc6ee00ed47de43
+  url: http://codingcorp.coding.dev-010.devops-cloud.club
