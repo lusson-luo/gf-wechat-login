@@ -7,8 +7,8 @@ require (
 	github.com/fatih/color v1.15.0
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/go-logr/logr v1.2.4 // indirect
-	github.com/gogf/gf/contrib/drivers/sqlite/v2 v2.4.0
-	github.com/gogf/gf/v2 v2.4.0
+	github.com/gogf/gf/contrib/drivers/sqlite/v2 v2.4.2
+	github.com/gogf/gf/v2 v2.4.2
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/mattn/go-isatty v0.0.18 // indirect
 	github.com/stretchr/testify v1.8.2
