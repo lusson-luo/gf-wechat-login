@@ -8,6 +8,7 @@ import (
 	"github.com/gogf/gf/v2/os/gcmd"
 
 	"login-demo/internal/controller"
+	"login-demo/internal/logic"
 	"login-demo/internal/middleware"
 )
 
@@ -34,6 +35,7 @@ var (
 					)
 				})
 			})
+			logic.User.InitAdmin(ctx)
 			s.Run()
 			return nil
 		},

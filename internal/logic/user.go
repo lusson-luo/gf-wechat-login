@@ -16,7 +16,6 @@ import (
 	"github.com/fatih/color"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
-	"github.com/gogf/gf/v2/os/gctx"
 	"github.com/gogf/gf/v2/os/gtime"
 )
 
@@ -117,11 +116,6 @@ func (*LogicUser) InitAdmin(ctx context.Context) {
 			Nickname: admin.Username,
 		})
 	}
-}
-
-func init() {
-	ctx := gctx.New()
-	User.InitAdmin(ctx)
 }
 
 func (*LogicUser) UserList(ctx context.Context, username string, page model.PageReq) (users []entity.User, count int) {
