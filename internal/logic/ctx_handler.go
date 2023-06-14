@@ -2,6 +2,11 @@ package logic
 
 import (
 	"context"
+	"fmt"
+	"login-demo/internal/model"
+
+	"github.com/gogf/gf/v2/errors/gcode"
+	"github.com/gogf/gf/v2/errors/gerror"
 )
 
 type LogicCtxHandler struct {
@@ -30,4 +35,19 @@ func (LogicCtxHandler) SetUserContext(username string, setCtx func(interface{}, 
 func (LogicCtxHandler) GetUserContext(ctx context.Context) (*UserContext, bool) {
 	v, ok := ctx.Value(UserContextKey).(UserContext)
 	return &v, ok
+}
+
+func (l LogicCtxHandler) GetCurrentUser(ctx context.Context) (user model.UserMore, err error) {
+	userCtx, _ := l.GetUserContext(ctx)
+
+	users, count, err := User.UserList(ctx, userCtx.Username, model.PageReq{})
+	if err != nil {
+		return
+	}
+	if count != 1 {
+		err = gerror.NewCode(gcode.New(1, "系统异常", fmt.Sprintf("%s 用户不存在", userCtx.Username)))
+		return
+	}
+	user = users[0]
+	return
 }

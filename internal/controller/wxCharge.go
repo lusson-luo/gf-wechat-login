@@ -175,11 +175,10 @@ func (c WxChargeController) MyChargeOrders(ctx context.Context, req *v1.WXCharge
 // 我的个人信息
 func (c WxChargeController) AboutMe(ctx context.Context, req *v1.WXMeInfoReq) (res v1.WXMeInfoRes, err error) {
 	// 获得当前用户
-	currentUser, err := logic.Ctx.GetCurrentUser(ctx)
+	currentUser, err := logic.CtxHandler.GetCurrentUser(ctx)
 	if err != nil {
-		err = gerror.NewCode(gcode.New(1, "系统异常", err.Error()))
 		return
 	}
-	res.Nickname, res.Balance, res.AvatarUrl = currentUser.Nickname, currentUser.Balance, ""
+	res.Nickname, res.Balance = currentUser.Nickname, currentUser.Balance
 	return
 }
