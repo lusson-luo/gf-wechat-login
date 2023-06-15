@@ -182,3 +182,22 @@ func (c WxChargeController) AboutMe(ctx context.Context, req *v1.WXMeInfoReq) (r
 	res.Nickname, res.Balance = currentUser.Nickname, currentUser.Balance
 	return
 }
+
+// 时段价格列表
+func (c WxChargeController) List(ctx context.Context, req *v1.WXPriceListReq) (pageRes model.PageRes, err error) {
+	model.InitPageReq(&req.PageReq, 1, 10)
+	chargePrices, count, err := logic.ChargePrice.ChargePriceList(ctx, req.PageReq)
+	res := make([]*v1.WXPriceListRes, len(chargePrices))
+	for i, chargePrice := range chargePrices {
+		res[i] = &v1.WXPriceListRes{
+			Id:        chargePrice.Id,
+			StartHour: chargePrice.StartHour,
+			EndHour:   chargePrice.EndHour,
+			Price:     chargePrice.Price,
+			CreateAt:  chargePrice.CreateAt.Time,
+			UpdateAt:  chargePrice.UpdateAt.Time,
+		}
+	}
+	pageRes.List, pageRes.PageNo, pageRes.PageSize, pageRes.TotalCount = res, req.PageNo, req.PageSize, count
+	return
+}

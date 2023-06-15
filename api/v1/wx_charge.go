@@ -121,3 +121,19 @@ type WXMeInfoRes struct {
 	Balance   float64 `json:"balance"  `  //
 	AvatarUrl string  `json:"avatarUrl" ` //
 }
+
+// 价格区间
+type WXPriceListReq struct {
+	g.Meta `path:"/wx-api/price/list" tags:"price" method:"get" summary:"时段价格列表"`
+	model.PageReq
+}
+
+type WXPriceListRes struct {
+	g.Meta    `mime:"application/json" example:"string"`
+	Id        int       `json:"id"`
+	StartHour int       `json:"startHour" ` //
+	EndHour   int       `json:"endHour"   ` //
+	Price     float64   `json:"price"     ` //
+	CreateAt  time.Time `json:"createAt"  ` //
+	UpdateAt  time.Time `json:"updateAt"  ` //
+}
