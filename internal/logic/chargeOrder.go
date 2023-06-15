@@ -108,7 +108,7 @@ func (*ChargeOrderLogic) StartCharge(ctx context.Context, pileId int, chargeHour
 	}
 
 	// 获得当前用户
-	currentUser, err := Ctx.GetCurrentUser(ctx)
+	currentUser, err := CtxHandler.GetCurrentUser(ctx)
 	if err != nil {
 		err = gerror.NewCode(gcode.New(1, "获取当前用户失败，请重新登录", err))
 		return err

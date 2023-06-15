@@ -138,7 +138,7 @@ func (c WxChargeController) MyChargeOrders(ctx context.Context, req *v1.WXCharge
 	// 初始化分页参数，设置默认值
 	model.InitPageReq(&req.PageReq, 1, 10)
 	// 获得当前用户
-	currentUser, err := logic.Ctx.GetCurrentUser(ctx)
+	currentUser, err := logic.CtxHandler.GetCurrentUser(ctx)
 	if err != nil {
 		err = gerror.NewCode(gcode.New(1, "系统异常", err.Error()))
 		return

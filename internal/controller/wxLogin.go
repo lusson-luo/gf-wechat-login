@@ -28,7 +28,7 @@ func (WxLoginController) Login(ctx context.Context, req *v1.WxLoginReq) (res *v1
 		}
 		return
 	}
-	token, err := logic.MyJwt.GenerateToken(ctx, user.Passport)
+	token, err := logic.JwtHandler.GenerateToken(ctx, user.Passport)
 	if err != nil {
 		return nil, err
 	}
