@@ -9,13 +9,11 @@ import (
 	"login-demo/internal/model"
 	"login-demo/internal/model/do"
 	"login-demo/internal/model/entity"
-	"strings"
 
 	"crypto/sha256"
 
 	"github.com/fatih/color"
 	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/net/ghttp"
 	"github.com/gogf/gf/v2/os/gtime"
 )
 
@@ -39,53 +37,13 @@ func (lu *LogicUser) Login(ctx context.Context, username string, password string
 		return "", "", errors.New("账户或密码错误")
 	default:
 		// 生成 jwt token
-		token, err = MyJwt.GenerateToken(ctx, username)
+		token, err = JwtHandler.GenerateToken(ctx, username)
 		if err != nil {
 			return "", "", err
 		}
 		// todo: 暂时没有 role
 		return "", token, nil
 	}
-}
-
-// IsSignedIn 检查是否已经登录
-func (lu *LogicUser) IsSignedIn(ctx context.Context, r *ghttp.Request) bool {
-	token, exist := lu.getToken(r)
-	if !exist {
-		return false
-	}
-	return MyJwt.Valid(r.Context(), token)
-}
-
-// Parse 解析 jwt token
-func (lu *LogicUser) Parse(ctx context.Context, r *ghttp.Request) (bool, string) {
-	token, exist := lu.getToken(r)
-	if !exist {
-		return false, ""
-	}
-	claims, ok := MyJwt.Parse(r.Context(), token)
-	if !ok {
-		return false, ""
-	}
-	return ok, claims.Username
-}
-
-// getToken 从 request 的 header 中获取 token
-func (*LogicUser) getToken(r *ghttp.Request) (string, bool) {
-	header := r.GetHeader("Authorization")
-	headerList := strings.Split(header, " ")
-	if len(headerList) != 2 {
-		return "", false
-	}
-	t := headerList[0]
-	token := headerList[1]
-	if t != "Bearer" {
-		return "", false
-	}
-	if token == "" {
-		return "", false
-	}
-	return token, true
 }
 
 type AdminInfo struct {
