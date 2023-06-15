@@ -21,9 +21,6 @@ var (
 			s := g.Server()
 			s.Use(ghttp.MiddlewareHandlerResponse)
 			s.Group("/", func(group *ghttp.RouterGroup) {
-				group.Middleware(
-					middleware.ParseJwtToCtx,
-				)
 				// 绑定 Login 结构体中的 Login 方法
 				group.POST("", new(controller.Login).Login)
 				group.Bind()

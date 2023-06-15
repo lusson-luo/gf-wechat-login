@@ -8,13 +8,13 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-type LogicJwt struct {
+type LogicJWTHandler struct {
 }
 
 var (
-	MyJwt       LogicJwt = LogicJwt{}
-	JwtSecret   []byte   = []byte("123456")
-	ExpiresTime          = time.Minute * 1 // 默认1分钟
+	JwtHandler  = LogicJWTHandler{}
+	JwtSecret   = []byte("123456")
+	ExpiresTime = time.Minute * 1 // 默认1分钟
 )
 
 func init() {
@@ -23,15 +23,14 @@ func init() {
 	ExpiresTime = time.Minute * time.Duration(tokenAlive)
 }
 
-type MyClaims struct {
+type UserClaims struct {
 	Username string `json:"username"`
 	jwt.StandardClaims
 }
 
 // GenerateToken 生成 jwt 格式 token
-func (LogicJwt) GenerateToken(ctx context.Context, username string) (token string, err error) {
-	print("ExpiresTime", ExpiresTime)
-	tokenHeader := jwt.NewWithClaims(jwt.SigningMethodHS256, &MyClaims{
+func (LogicJWTHandler) GenerateToken(ctx context.Context, username string) (token string, err error) {
+	tokenHeader := jwt.NewWithClaims(jwt.SigningMethodHS256, &UserClaims{
 		Username: username,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(ExpiresTime).Unix(),
@@ -42,8 +41,8 @@ func (LogicJwt) GenerateToken(ctx context.Context, username string) (token strin
 }
 
 // Valid 验证 token 是否合法
-func (LogicJwt) Valid(ctx context.Context, token string) (valid bool) {
-	var claims *MyClaims = &MyClaims{}
+func (LogicJWTHandler) Valid(ctx context.Context, token string) (valid bool) {
+	var claims *UserClaims = &UserClaims{}
 	tkn, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
 		return JwtSecret, nil
 	})
@@ -52,11 +51,10 @@ func (LogicJwt) Valid(ctx context.Context, token string) (valid bool) {
 }
 
 // 解析 token 内容
-func (LogicJwt) Parse(ctx context.Context, token string) (claims *MyClaims, valid bool) {
-	claims = &MyClaims{}
-	_, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
+func (LogicJWTHandler) Parse(ctx context.Context, token string) (claims *UserClaims, err error) {
+	claims = &UserClaims{}
+	_, err = jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
 		return JwtSecret, nil
 	})
-	valid = err == nil
 	return
 }
