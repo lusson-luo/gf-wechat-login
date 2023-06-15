@@ -18,7 +18,7 @@ type ChargePriceLogic struct {
 }
 
 func (*ChargePriceLogic) ChargePriceList(ctx context.Context, page model.PageReq) (chargePrices []entity.ChargePrice, count int, err error) {
-	err = dao.ChargePrice.Ctx(ctx).Page(page.PageNo, page.PageSize).ScanAndCount(&chargePrices, &count, false)
+	err = dao.ChargePrice.Ctx(ctx).Page(page.PageNo, page.PageSize).OrderAsc("start_hour").ScanAndCount(&chargePrices, &count, false)
 	return
 }
 

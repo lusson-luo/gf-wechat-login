@@ -31,7 +31,7 @@ func (*PileLogic) PileList(ctx context.Context, query entity.Pile, page model.Pa
 	if err != nil {
 		return
 	}
-	err = model.Fields("pile.*, station.name").Page(page.PageNo, page.PageSize).Scan(&piles)
+	err = model.Fields("pile.*, station.name").OrderDesc("update_at").Page(page.PageNo, page.PageSize).Scan(&piles)
 	return
 }
 

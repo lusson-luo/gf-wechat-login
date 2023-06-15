@@ -17,7 +17,7 @@ type StationLogic struct {
 }
 
 func (*StationLogic) StationList(ctx context.Context, query entity.Station, page model.PageReq) (stations []entity.Station, count int, err error) {
-	err = dao.Station.Ctx(ctx).WhereLike("name", fmt.Sprintf("%%%s%%", query.Name)).WhereLike("address", fmt.Sprintf("%%%s%%", query.Address)).Page(page.PageNo, page.PageSize).ScanAndCount(&stations, &count, false)
+	err = dao.Station.Ctx(ctx).WhereLike("name", fmt.Sprintf("%%%s%%", query.Name)).WhereLike("address", fmt.Sprintf("%%%s%%", query.Address)).OrderDesc("update_at").Page(page.PageNo, page.PageSize).ScanAndCount(&stations, &count, false)
 	return
 }
 

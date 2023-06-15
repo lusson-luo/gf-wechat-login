@@ -58,7 +58,7 @@ func (*ChargeOrderLogic) ChargeOrderList(ctx context.Context, query model.Charge
 	if err != nil {
 		return
 	}
-	err = model.Fields("charge_order.*, station.name as station_name, pile.code as pile_code, user.nickname as nickname").Page(query.PageNo, query.PageSize).Scan(&chargeOrders)
+	err = model.Fields("charge_order.*, station.name as station_name, pile.code as pile_code, user.nickname as nickname").OrderDesc("charge_order.update_at").Page(query.PageNo, query.PageSize).Scan(&chargeOrders)
 	return
 }
 

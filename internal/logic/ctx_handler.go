@@ -39,13 +39,12 @@ func (LogicCtxHandler) GetUserContext(ctx context.Context) (*UserContext, bool) 
 
 func (l LogicCtxHandler) GetCurrentUser(ctx context.Context) (user model.UserMore, err error) {
 	userCtx, _ := l.GetUserContext(ctx)
-
 	users, count, err := User.UserList(ctx, userCtx.Username, model.PageReq{})
 	if err != nil {
 		return
 	}
 	if count != 1 {
-		err = gerror.NewCode(gcode.New(1, "系统异常", fmt.Sprintf("%s 用户不存在", userCtx.Username)))
+		err = gerror.NewCode(gcode.New(404, fmt.Sprintf("%s 用户不存在，请重新注册", userCtx.Username), "系统异常"))
 		return
 	}
 	user = users[0]

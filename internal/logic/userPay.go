@@ -23,7 +23,7 @@ type UserPayLogic struct {
 }
 
 func (*UserPayLogic) UserPayList(ctx context.Context, page model.PageReq) (userPays []model.PayRecordInfo, count int, err error) {
-	err = dao.PayRecord.Ctx(ctx).LeftJoin("user", "user.id=pay_record.user_id").Page(page.PageNo, page.PageSize).Fields("pay_record.*, user.passport as username").ScanAndCount(&userPays, &count, false)
+	err = dao.PayRecord.Ctx(ctx).LeftJoin("user", "user.id=pay_record.user_id").Page(page.PageNo, page.PageSize).Fields("pay_record.*, user.passport as username").OrderDesc("pay_record.update_at").ScanAndCount(&userPays, &count, false)
 	return
 }
 
