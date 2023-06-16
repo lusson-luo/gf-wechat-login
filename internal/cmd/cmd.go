@@ -29,6 +29,7 @@ var (
 					group.POST("", new(controller.Login).Refresh)
 					group.Bind(
 						&controller.UserController{},
+						&controller.StationController{},
 						&controller.PileController{},
 						&controller.ChargeOrderController{},
 						&controller.ChargePriceController{},
@@ -50,6 +51,7 @@ var (
 					group.POST("", new(controller.WxChargeController).MyChargeOrders)
 					group.POST("", new(controller.WxChargeController).AboutMe)
 					group.POST("", new(controller.WxChargeController).StopCharge)
+					group.POST("", new(controller.WxChargeController).PriceList)
 				})
 			})
 			logic.User.InitAdmin(ctx)

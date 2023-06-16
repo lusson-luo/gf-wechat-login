@@ -184,7 +184,7 @@ func (c WxChargeController) AboutMe(ctx context.Context, req *v1.WXMeInfoReq) (r
 }
 
 // 时段价格列表
-func (c WxChargeController) List(ctx context.Context, req *v1.WXPriceListReq) (pageRes model.PageRes, err error) {
+func (c WxChargeController) PriceList(ctx context.Context, req *v1.WXPriceListReq) (pageRes model.PageRes, err error) {
 	model.InitPageReq(&req.PageReq, 1, 10)
 	chargePrices, count, err := logic.ChargePrice.ChargePriceList(ctx, req.PageReq)
 	res := make([]*v1.WXPriceListRes, len(chargePrices))

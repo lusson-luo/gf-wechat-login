@@ -38,7 +38,11 @@ func Auth(r *ghttp.Request) {
 
 // handleError 处理错误并设置响应
 func handleError(r *ghttp.Request, code int, err error, detail string) {
-	e := gerror.WrapCode(gcode.New(code, err.Error(), detail), err)
+	errMsg := detail
+	if err != nil {
+		errMsg = err.Error()
+	}
+	e := gerror.WrapCode(gcode.New(code, errMsg, detail), err)
 	r.SetError(e)
 }
 
