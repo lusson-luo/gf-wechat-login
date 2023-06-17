@@ -12,7 +12,7 @@ var WxUser WxUserLogic
 
 func (*WxUserLogic) GetUserByOpenID(ctx context.Context, openID string) (*entity.User, error) {
 	var user entity.User
-	err := dao.WxUser.Ctx(ctx).LeftJoin("user", "user.id=wx_user.user_id").Fields("user.*").Where("open_id=?", openID).Scan(&user)
+	err := dao.WxUser.Ctx(ctx).InnerJoin("user", "user.id=wx_user.user_id").Fields("user.*").Where("open_id=?", openID).Scan(&user)
 	if err != nil {
 		return nil, err
 	}
