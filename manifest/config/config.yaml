@@ -21,3 +21,8 @@ admin:
 
 # 登录 token 存活时间，单位分钟
 tokenAliveTime: 120
+
+# 微信小程序的账号密码，配置自己申请的
+wechat:
+  appId: wx97xxxcd
+  appSecret: 0xxxdc9b
