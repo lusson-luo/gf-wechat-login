@@ -14,6 +14,7 @@ import (
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gclient"
 	"github.com/gogf/gf/v2/os/glog"
+	"github.com/gogf/gf/v2/os/gtime"
 )
 
 type WxLoginLogic struct{}
@@ -51,7 +52,7 @@ func (*WxLoginLogic) WechatLogin(ctx context.Context, code string) (*WechatLogin
 		if data.ErrCode != 0 {
 			glog.Info(ctx, data)
 			glog.Error(ctx, data.ErrMsg)
-			return nil, gerror.NewCode(gcode.New(1, "微信登录失败", err.Error()))
+			return nil, gerror.NewCode(gcode.New(1, "微信登录失败", data.ErrMsg))
 		}
 		WxCache[code] = data
 		return &data, nil
@@ -106,6 +107,7 @@ func (*WxLoginLogic) WechatAccessToken(ctx context.Context) (string, error) {
 
 }
 
+// 废弃
 func (*WxLoginLogic) WechatPhone(ctx context.Context, code string, encryptedData string, iv string) (*WechatPhoneNumber, error) {
 	accessToken, err := WxLogin.WechatAccessToken(ctx)
 	if err != nil {
@@ -134,13 +136,11 @@ func (*WxLoginLogic) WechatPhone(ctx context.Context, code string, encryptedData
 		return nil, gerror.NewCode(gcode.New(1, "解析手机号失败", err.Error()))
 	}
 	if phoneNumber.ErrCode != 0 {
-		fmt.Println("=====", phoneNumber)
 		return nil, gerror.NewCode(gcode.New(phoneNumber.ErrCode, "获取手机号失败", phoneNumber.ErrMsg))
 	}
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("=====phoneNumber", phoneNumber)
 	return &phoneNumber, err
 }
 
@@ -187,8 +187,19 @@ func (s *RegisterService) Register(ctx context.Context, phone, nickname, avatarU
 		AvatarUrl: avatarUrl,
 		Nickname:  nickname,
 		Gender:    gender,
+		UpdateAt:  gtime.New(),
+		CreateAt:  gtime.New(),
 	}
 	dao.WxUser.Ctx(ctx).Insert(wxuser)
+
+	// 添加钱包信息
+	addUserWallet := do.UserWallet{
+		UserId:   user.Id,
+		Balance:  10.0,
+		UpdateAt: gtime.New(),
+		CreateAt: gtime.New(),
+	}
+	dao.UserWallet.Ctx(ctx).Insert(addUserWallet)
 
 	// 生成 JWT token
 	token, err = JwtHandler.GenerateToken(ctx, phone)

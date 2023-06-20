@@ -49,13 +49,14 @@ type Pile struct {
 
 // user 聚合信息，聚合余额
 type UserMore struct {
-	Id       int       `json:"id"       ` //
-	Passport string    `json:"passport" ` //
-	Password string    `json:"password" ` //
-	Nickname string    `json:"nickname" ` //
-	Balance  float64   `json:"balance"  ` //
-	CreateAt time.Time `json:"createAt" ` //
-	UpdateAt time.Time `json:"updateAt" ` //
+	Id        int       `json:"id"       `    //
+	Passport  string    `json:"passport" `    //
+	Password  string    `json:"password" `    //
+	Nickname  string    `json:"nickname" `    //
+	Balance   float64   `json:"balance"  `    //
+	AvatarUrl string    `json:"avatar_url"  ` //
+	CreateAt  time.Time `json:"createAt" `    //
+	UpdateAt  time.Time `json:"updateAt" `    //
 }
 
 // payRecord 聚合信息，聚合用户名

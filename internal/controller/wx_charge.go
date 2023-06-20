@@ -179,7 +179,7 @@ func (c WxChargeController) AboutMe(ctx context.Context, req *v1.WXMeInfoReq) (r
 	if err != nil {
 		return
 	}
-	res.Nickname, res.Balance = currentUser.Nickname, currentUser.Balance
+	res.Nickname, res.Balance, res.AvatarUrl = currentUser.Nickname, currentUser.Balance, currentUser.AvatarUrl
 	return
 }
 

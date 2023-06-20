@@ -56,7 +56,7 @@ func (WxLoginController) Register(ctx context.Context, req *v1.WxRegisterReq) (r
 	// 查询用户是否已经存在
 	_, err = logic.WxUser.GetUserByOpenID(ctx, data.OpenID)
 	if err == nil {
-		return nil, gerror.NewCode(gcode.New(1, "用户已经存在，无需注册", err.Error()))
+		return nil, gerror.NewCode(gcode.New(1, "用户已经存在，无需注册", "用户已经存在，无需注册"))
 	}
 
 	// 注册新用户

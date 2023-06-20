@@ -77,7 +77,7 @@ func (*LogicUser) InitAdmin(ctx context.Context) {
 }
 
 func (*LogicUser) UserList(ctx context.Context, username string, page model.PageReq) (users []model.UserMore, count int, err error) {
-	err = dao.User.Ctx(ctx).LeftJoin("user_wallet", "user.id = user_wallet.user_id").Fields("user.*, user_wallet.balance").WhereLike("passport", fmt.Sprintf("%%%s%%", username)).OrderDesc("user.update_at").Page(page.PageNo, page.PageSize).ScanAndCount(&users, &count, false)
+	err = dao.User.Ctx(ctx).LeftJoin("user_wallet", "user.id = user_wallet.user_id").LeftJoin("wx_user", "user.id = wx_user.user_id").Fields("user.*, user_wallet.balance, wx_user.avatar_url").WhereLike("passport", fmt.Sprintf("%%%s%%", username)).OrderDesc("user.update_at").Page(page.PageNo, page.PageSize).ScanAndCount(&users, &count, false)
 	return
 }
 
