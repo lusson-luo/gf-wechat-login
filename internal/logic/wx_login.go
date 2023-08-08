@@ -5,10 +5,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"login-demo/internal/consts"
 	"login-demo/internal/dao"
 	"login-demo/internal/model/do"
+	"login-demo/internal/packed/jwt"
 	"net/http"
 
+	"github.com/gogf/gf/v2/database/gdb"
 	"github.com/gogf/gf/v2/errors/gcode"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
@@ -113,11 +116,6 @@ func (*WxLoginLogic) WechatPhone(ctx context.Context, code string, encryptedData
 	if err != nil {
 		return nil, gerror.NewCode(gcode.New(1, "获取 accessToken", err.Error()))
 	}
-	// value, ok := WxCache[code]
-	// if !ok {
-	// 	panic("code not found")
-	// }
-
 	url := fmt.Sprintf("https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=%s", accessToken)
 
 	// 创建 HTTP 客户端
@@ -149,11 +147,13 @@ func (*WxLoginLogic) SendValidCode(ctx context.Context, phone string) error {
 	return nil
 }
 
-// RegisterService 是注册相关的 service
-type RegisterService struct {
+// WxRegisterService 是注册相关的 service
+type WxRegisterService struct {
 }
 
-func (s *RegisterService) VerifyCode(ctx context.Context, phone, validcode string) (err error) {
+var WxRegister WxRegisterService
+
+func (s *WxRegisterService) VerifyCode(ctx context.Context, phone, validcode string) (err error) {
 	validCode, ok := WxValidcode[phone]
 	if ok {
 		if validCode == validcode {
@@ -163,46 +163,58 @@ func (s *RegisterService) VerifyCode(ctx context.Context, phone, validcode strin
 	return errors.New("验证码不匹配")
 }
 
-var Register RegisterService
-
 // Register 用于注册新用户
-func (s *RegisterService) Register(ctx context.Context, phone, nickname, avatarUrl, openid, gender string) (token string, err error) {
-	// 添加新用户
-	user := &do.User{
-		Passport: phone,
-		Nickname: nickname,
-		Password: "123456",
-	}
-	err = User.Add(ctx, user)
+func (s *WxRegisterService) Register(ctx context.Context, phone, nickname, avatarUrl, openid, gender string) (token string, err error) {
+	err = g.DB().Transaction(ctx, func(ctx context.Context, tx gdb.TX) error {
+		// 添加新用户
+		user := &do.User{
+			Passport: phone,
+			Nickname: nickname,
+			Password: "123456",
+			TenantId: consts.DefaultTenantValue,
+		}
+		err = User.Add(ctx, user)
+		if err != nil {
+			return err
+		}
+
+		// 添加微信用户信息
+		wxuser := do.WxUser{
+			UserId:    user.Id,
+			OpenId:    openid,
+			PhoneNo:   phone,
+			AvatarUrl: avatarUrl,
+			Nickname:  nickname,
+			Gender:    gender,
+			TenantId:  consts.DefaultTenantValue,
+			UpdateAt:  gtime.New(),
+			CreateAt:  gtime.New(),
+		}
+		_, err = dao.WxUser.Ctx(ctx).Insert(wxuser)
+		if err != nil {
+			return err
+		}
+
+		// 添加钱包信息
+		addUserWallet := do.UserWallet{
+			UserId:   user.Id,
+			Balance:  10.0,
+			TenantId: consts.DefaultTenantValue,
+			UpdateAt: gtime.New(),
+			CreateAt: gtime.New(),
+		}
+		_, err = dao.UserWallet.Ctx(ctx).Insert(addUserWallet)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
 	if err != nil {
 		err = gerror.NewCode(gcode.New(1, "微信注册失败", err.Error()))
-		return "", err
 	}
-
-	// 添加微信用户信息
-	wxuser := do.WxUser{
-		UserId:    user.Id,
-		OpenId:    openid,
-		PhoneNo:   phone,
-		AvatarUrl: avatarUrl,
-		Nickname:  nickname,
-		Gender:    gender,
-		UpdateAt:  gtime.New(),
-		CreateAt:  gtime.New(),
-	}
-	dao.WxUser.Ctx(ctx).Insert(wxuser)
-
-	// 添加钱包信息
-	addUserWallet := do.UserWallet{
-		UserId:   user.Id,
-		Balance:  10.0,
-		UpdateAt: gtime.New(),
-		CreateAt: gtime.New(),
-	}
-	dao.UserWallet.Ctx(ctx).Insert(addUserWallet)
 
 	// 生成 JWT token
-	token, err = JwtHandler.GenerateToken(ctx, phone)
+	token, err = jwt.GenerateToken(ctx, phone)
 	if err != nil {
 		return "", err
 	}

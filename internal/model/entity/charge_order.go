@@ -11,6 +11,7 @@ import (
 // ChargeOrder is the golang structure for table charge_order.
 type ChargeOrder struct {
 	Id        int         `json:"id"        ` //
+	TenantId  int         `json:"tenantId"  ` //
 	OrderCode string      `json:"orderCode" ` //
 	UserId    int         `json:"userId"    ` //
 	StationId int         `json:"stationId" ` //

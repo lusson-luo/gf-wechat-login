@@ -16,6 +16,7 @@ type Pile struct {
 	Code      interface{} //
 	StationId interface{} //
 	State     interface{} //
+	TenantId  interface{} //
 	CreateAt  *gtime.Time //
 	UpdateAt  *gtime.Time //
 }

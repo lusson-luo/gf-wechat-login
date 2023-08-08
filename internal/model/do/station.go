@@ -13,6 +13,7 @@ import (
 type Station struct {
 	g.Meta     `orm:"table:station, do:true"`
 	Id         interface{} //
+	TenantId   interface{} //
 	Name       interface{} //
 	Address    interface{} //
 	Coordinate interface{} //

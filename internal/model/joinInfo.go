@@ -55,6 +55,8 @@ type UserMore struct {
 	Nickname  string    `json:"nickname" `    //
 	Balance   float64   `json:"balance"  `    //
 	AvatarUrl string    `json:"avatar_url"  ` //
+	RoleId    int       `json:"role_id"  `    //
+	RoleName  string    `json:"role_name"  `  //
 	CreateAt  time.Time `json:"createAt" `    //
 	UpdateAt  time.Time `json:"updateAt" `    //
 }
@@ -70,4 +72,19 @@ type PayRecordInfo struct {
 	PayAt    time.Time `json:"payAt"    `   //
 	CreateAt time.Time `json:"createAt" `   //
 	UpdateAt time.Time `json:"updateAt" `   //
+}
+
+type Station struct {
+	Id         int         `json:"id"         `   //
+	TenantId   int         `json:"tenantId"   `   //
+	TenantName string      `json:"tenantName"   ` //
+	Name       string      `json:"name"       `   //
+	Address    string      `json:"address"    `   //
+	Coordinate string      `json:"coordinate" `   //
+	CreateAt   *gtime.Time `json:"createAt"   `   //
+	UpdateAt   *gtime.Time `json:"updateAt"   `   //
+}
+
+type UserContext struct {
+	Username string
 }

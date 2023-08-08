@@ -13,6 +13,7 @@ import (
 type WxUser struct {
 	g.Meta    `orm:"table:wx_user, do:true"`
 	UserId    interface{} //
+	TenantId  interface{} //
 	OpenId    interface{} //
 	PhoneNo   interface{} //
 	AvatarUrl interface{} //

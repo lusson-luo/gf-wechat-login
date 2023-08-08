@@ -43,13 +43,8 @@ func (*UserPayLogic) UserPay(ctx context.Context, userPay do.PayRecord) (err err
 	userWalletExist := new(entity.UserWallet)
 	err = dao.UserWallet.Ctx(ctx).Where("user_id=?", userPay.UserId).Scan(userWalletExist)
 	if err == sql.ErrNoRows {
-		userWallet := do.UserWallet{
-			UserId:   userPay.UserId,
-			Balance:  userPay.Price,
-			CreateAt: gtime.Now(),
-			UpdateAt: gtime.Now(),
-		}
-		_, err = dao.UserWallet.Ctx(ctx).Insert(userWallet)
+		err = gerror.NewCode(gcode.New(1, "系统异常，未找到钱包信息", ""))
+		return
 	} else {
 		fmt.Printf("userPay.Price:%T, userWalletExist.Balance:%T\n", userPay.Price, userWalletExist.Balance)
 		userWallet := do.UserWallet{
@@ -68,6 +63,10 @@ func (*UserPayLogic) UserPay(ctx context.Context, userPay do.PayRecord) (err err
 	userPay.PayCode = fmt.Sprintf("%s-%d", time.Now().Format("200601021504"), rand.Intn(10000))
 	if err != nil {
 		userPay.State = 2
+	}
+	err = SetCurrentTenantId(ctx, &userPay.TenantId)
+	if err != nil {
+		return
 	}
 	_, err = dao.PayRecord.Ctx(ctx).Insert(userPay)
 	tx.Commit()

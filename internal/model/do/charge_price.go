@@ -13,6 +13,7 @@ import (
 type ChargePrice struct {
 	g.Meta    `orm:"table:charge_price, do:true"`
 	Id        interface{} //
+	TenantId  interface{} //
 	StartHour interface{} //
 	EndHour   interface{} //
 	Price     interface{} //

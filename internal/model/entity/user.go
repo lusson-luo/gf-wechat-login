@@ -11,6 +11,8 @@ import (
 // User is the golang structure for table user.
 type User struct {
 	Id       int         `json:"id"       ` //
+	TenantId int         `json:"tenantId" ` //
+	RoleId   int         `json:"roleId"   ` //
 	Passport string      `json:"passport" ` //
 	Password string      `json:"password" ` //
 	Nickname string      `json:"nickname" ` //

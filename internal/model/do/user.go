@@ -13,6 +13,8 @@ import (
 type User struct {
 	g.Meta   `orm:"table:user, do:true"`
 	Id       interface{} //
+	TenantId interface{} //
+	RoleId   interface{} //
 	Passport interface{} //
 	Password interface{} //
 	Nickname interface{} //

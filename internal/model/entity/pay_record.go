@@ -11,6 +11,7 @@ import (
 // PayRecord is the golang structure for table pay_record.
 type PayRecord struct {
 	Id       int         `json:"id"       ` //
+	TenantId int         `json:"tenantId" ` //
 	PayCode  string      `json:"payCode"  ` //
 	UserId   int         `json:"userId"   ` //
 	State    int         `json:"state"    ` //

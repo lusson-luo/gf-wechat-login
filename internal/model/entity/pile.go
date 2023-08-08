@@ -14,6 +14,7 @@ type Pile struct {
 	Code      string      `json:"code"      ` //
 	StationId int         `json:"stationId" ` //
 	State     int         `json:"state"     ` //
+	TenantId  int         `json:"tenantId"  ` //
 	CreateAt  *gtime.Time `json:"createAt"  ` //
 	UpdateAt  *gtime.Time `json:"updateAt"  ` //
 }

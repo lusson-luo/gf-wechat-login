@@ -62,133 +62,117 @@ func (*ChargeOrderLogic) ChargeOrderList(ctx context.Context, query model.Charge
 	return
 }
 
-func (*ChargeOrderLogic) Update(ctx context.Context, update do.ChargeOrder) (err error) {
+func (*ChargeOrderLogic) Update(ctx context.Context, update do.ChargeOrder) error {
 	update.UpdateAt = gtime.Now()
-	_, err = dao.ChargeOrder.Ctx(ctx).Update(update, "id=?", update.Id)
-	return
+	rs, err := dao.ChargeOrder.Ctx(ctx).Update(update, "id=?", update.Id)
+	if err != nil {
+		return gerror.WrapCode(gcode.New(1, "系统异常，修改失败", ""), err)
+	}
+	rowsAffected, err := rs.RowsAffected()
+	if err != nil {
+		return gerror.WrapCode(gcode.New(1, "系统异常，修改失败", ""), err)
+	}
+	if rowsAffected == 0 {
+		err = gerror.NewCode(gcode.New(1, "修改失败，未找到修改原数据，可能已被删除", ""))
+		return err
+	}
+	return nil
 }
 
 // 开始充电
 // 先不支持按小时充电，需要修改数据库
 func (*ChargeOrderLogic) StartCharge(ctx context.Context, pileId int, chargeHours int) (err error) {
-	// 创建事务
-	tx, err := g.DB().Begin(ctx)
-	if err != nil {
-		return gerror.NewCode(gcode.New(1, "创建事务失败", err.Error()))
-	}
-
-	// 使用事务的上下文
-	ctx = gdb.WithTX(ctx, tx)
-
-	// 在函数结束时处理事务
-	defer func() {
-		if err != nil {
-			_ = tx.Rollback()
-		} else {
-			_ = tx.Commit()
-		}
-	}()
-	// 1. 修改充电桩转态为充电
-	pile := &entity.Pile{}
-	err = dao.Pile.Ctx(ctx).Where("id=?", pileId).Scan(pile)
-	if err != nil {
-		err = gerror.NewCode(gcode.New(1, "找不到充电桩信息", err.Error()))
-		return err
-	}
-	if pile.State != 0 {
-		err = gerror.NewCode(gcode.New(1, "充电桩状态异常", "充电桩状态异常无法充电，请更换另一个充电桩"))
-		return err
-	}
-	pile.State = 1
-	pile.UpdateAt = gtime.Now()
-	_, err = dao.Pile.Ctx(ctx).Update(pile, "id=?", pile.Id)
-	if err != nil {
-		err = gerror.NewCode(gcode.New(1, "系统异常", err.Error()))
-		return err
-	}
-
 	// 获得当前用户
-	currentUser, err := CtxHandler.GetCurrentUser(ctx)
+	currentUser, err := User.GetCurrentUser(ctx)
 	if err != nil {
 		err = gerror.NewCode(gcode.New(1, "获取当前用户失败，请重新登录", err))
 		return err
 	}
+	// 开启事务
+	err = g.DB().Transaction(ctx, func(ctx context.Context, tx gdb.TX) error {
+		// 1. 修改充电桩转态为充电
+		pile := &entity.Pile{}
+		err = dao.Pile.Ctx(ctx).Where("id=?", pileId).Scan(pile)
+		if err != nil {
+			err = gerror.NewCode(gcode.New(1, "找不到充电桩信息", err.Error()))
+			return err
+		}
+		if pile.State != 0 {
+			err = gerror.NewCode(gcode.New(1, "充电桩状态异常", "充电桩状态异常无法充电，请更换另一个充电桩"))
+			return err
+		}
+		pile.State = 1
+		pile.UpdateAt = gtime.Now()
+		_, err = dao.Pile.Ctx(ctx).Update(pile, "id=?", pile.Id)
+		if err != nil {
+			err = gerror.NewCode(gcode.New(1, "系统异常", err.Error()))
+			return err
+		}
 
-	// 2. 生成充电订单
-	chargeOrder := do.ChargeOrder{
-		OrderCode: fmt.Sprintf("%s-%d", time.Now().Format("200601021504"), rand.Intn(10000)),
-		StationId: pile.StationId,
-		PileId:    pile.Id,
-		UserId:    currentUser.Id,
-		StartAt:   gtime.Now(),
-		State:     0,
-		CreateAt:  gtime.Now(),
-		UpdateAt:  gtime.Now(),
-	}
-	_, err = dao.ChargeOrder.Ctx(ctx).Insert(chargeOrder)
+		// 2. 生成充电订单
+		chargeOrder := do.ChargeOrder{
+			OrderCode: fmt.Sprintf("%s-%d", time.Now().Format("200601021504"), rand.Intn(10000)),
+			StationId: pile.StationId,
+			PileId:    pile.Id,
+			UserId:    currentUser.Id,
+			StartAt:   gtime.Now(),
+			State:     0,
+			TenantId:  pile.TenantId,
+			CreateAt:  gtime.Now(),
+			UpdateAt:  gtime.Now(),
+		}
+		_, err = dao.ChargeOrder.Ctx(ctx).Insert(chargeOrder)
+		return err
+	})
 	return
 }
 
 // 结束充电
 func (*ChargeOrderLogic) StopCharge(ctx context.Context, orderId int) (err error) {
-	// 创建事务
-	tx, err := g.DB().Begin(ctx)
-	if err != nil {
-		return gerror.NewCode(gcode.New(1, "创建事务失败", err.Error()))
-	}
-
-	// 使用事务的上下文
-	ctx = gdb.WithTX(ctx, tx)
-
-	// 在函数结束时处理事务
-	defer func() {
+	// 开启事务
+	err = g.DB().Transaction(ctx, func(ctx context.Context, tx gdb.TX) error {
+		// 1. 查询充电订单记录并锁定
+		chargeOrderFind := &entity.ChargeOrder{}
+		err = dao.ChargeOrder.Ctx(ctx).Where("id=?", orderId).Scan(chargeOrderFind)
 		if err != nil {
-			_ = tx.Rollback()
-		} else {
-			_ = tx.Commit()
+			return gerror.NewCode(gcode.New(1, "未找到充电订单", err.Error()))
 		}
-	}()
+		if chargeOrderFind.State != 0 {
+			return gerror.NewCode(gcode.New(1, "该充电订单已经结束", ""))
+		}
+		chargePrices, _, err := ChargePrice.ChargePriceList(ctx, model.PageReq{})
+		if err != nil {
+			return gerror.NewCode(gcode.New(1, "未找到价格", err.Error()))
+		}
 
-	// 查询充电订单记录并锁定
-	chargeOrderFind := &entity.ChargeOrder{}
-	err = dao.ChargeOrder.Ctx(ctx).Where("id=?", orderId).Scan(chargeOrderFind)
-	if err != nil {
-		return gerror.NewCode(gcode.New(1, "未找到充电订单", err.Error()))
-	}
-	if chargeOrderFind.State != 0 {
-		return gerror.NewCode(gcode.New(1, "该充电订单已经结束", ""))
-	}
-	chargePrices, _, err := ChargePrice.ChargePriceList(ctx, model.PageReq{})
-	if err != nil {
-		return gerror.NewCode(gcode.New(1, "未找到价格", err.Error()))
-	}
+		// 2. 订单结束，计算金额
+		hourlyRates := make([]HourlyRate, len(chargePrices))
+		for i, price := range chargePrices {
+			hourlyRates[i].StartHour = price.StartHour
+			hourlyRates[i].EndHour = price.EndHour
+			hourlyRates[i].Rate = float64(price.Price)
+		}
+		amount := CalculateAmount(chargeOrderFind.StartAt.Time, gtime.Now().Time, hourlyRates)
 
-	// 1. 订单结束，计算金额
-	hourlyRates := make([]HourlyRate, len(chargePrices))
-	for i, price := range chargePrices {
-		hourlyRates[i].StartHour = price.StartHour
-		hourlyRates[i].EndHour = price.EndHour
-		hourlyRates[i].Rate = float64(price.Price)
-	}
-	amount := CalculateAmount(chargeOrderFind.StartAt.Time, gtime.Now().Time, hourlyRates)
+		// 3. 修改订单价格
+		chargeOrderFind.State, chargeOrderFind.StopAt, chargeOrderFind.Price = 1, gtime.Now(), amount
+		_, err = dao.ChargeOrder.Ctx(ctx).Update(chargeOrderFind, "id=?", chargeOrderFind.Id)
+		if err != nil {
+			return gerror.WrapCode(gcode.New(1, "修改订单状态失败", err), err)
+		}
 
-	// 2. 修改订单价格
-	chargeOrderFind.State, chargeOrderFind.StopAt, chargeOrderFind.Price = 1, gtime.Now(), amount
-	_, err = dao.ChargeOrder.Ctx(ctx).Update(chargeOrderFind, "id=?", chargeOrderFind.Id)
-	if err != nil {
-		return gerror.WrapCode(gcode.New(1, "修改订单状态失败", err), err)
-	}
-
-	// 3. 充电桩可用状态释放
-	err = ReleasePile(ctx, chargeOrderFind.PileId)
-	if err != nil {
-		return gerror.WrapCode(gcode.New(1, "释放充电桩失败", err), err)
-	}
-	// 4. 用户扣除对应余额
-	err = DeductUserBalance(ctx, chargeOrderFind.UserId, amount)
-	if err != nil {
-		return gerror.WrapCode(gcode.New(1, "扣除用户金额失败", err), err)
-	}
+		// 4. 充电桩可用状态释放
+		err = ReleasePile(ctx, chargeOrderFind.PileId)
+		if err != nil {
+			return gerror.WrapCode(gcode.New(1, "释放充电桩失败", err), err)
+		}
+		// 5. 用户扣除对应余额
+		err = DeductUserBalance(ctx, chargeOrderFind.UserId, amount)
+		if err != nil {
+			return gerror.WrapCode(gcode.New(1, "扣除用户金额失败", err), err)
+		}
+		return nil
+	})
 	return
 }
 

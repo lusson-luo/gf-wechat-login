@@ -13,6 +13,7 @@ import (
 type ChargeOrder struct {
 	g.Meta    `orm:"table:charge_order, do:true"`
 	Id        interface{} //
+	TenantId  interface{} //
 	OrderCode interface{} //
 	UserId    interface{} //
 	StationId interface{} //

@@ -11,6 +11,7 @@ import (
 // Station is the golang structure for table station.
 type Station struct {
 	Id         int         `json:"id"         ` //
+	TenantId   int         `json:"tenantId"   ` //
 	Name       string      `json:"name"       ` //
 	Address    string      `json:"address"    ` //
 	Coordinate string      `json:"coordinate" ` //

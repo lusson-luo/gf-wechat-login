@@ -13,6 +13,7 @@ import (
 type PayRecord struct {
 	g.Meta   `orm:"table:pay_record, do:true"`
 	Id       interface{} //
+	TenantId interface{} //
 	PayCode  interface{} //
 	UserId   interface{} //
 	State    interface{} //

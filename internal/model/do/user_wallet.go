@@ -13,6 +13,7 @@ import (
 type UserWallet struct {
 	g.Meta   `orm:"table:user_wallet, do:true"`
 	UserId   interface{} //
+	TenantId interface{} //
 	Balance  interface{} //
 	CreateAt *gtime.Time //
 	UpdateAt *gtime.Time //

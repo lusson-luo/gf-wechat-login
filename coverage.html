@@ -1,0 +1,2649 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>manager: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">login-demo/internal/controller/manager/tenant.go (83.0%)</option>
+				
+				<option value="file1">login-demo/internal/controller/saas/audit_log.go (100.0%)</option>
+				
+				<option value="file2">login-demo/internal/controller/saas/charge_order.go (100.0%)</option>
+				
+				<option value="file3">login-demo/internal/controller/saas/charge_price.go (100.0%)</option>
+				
+				<option value="file4">login-demo/internal/controller/saas/login.go (100.0%)</option>
+				
+				<option value="file5">login-demo/internal/controller/saas/permission.go (88.0%)</option>
+				
+				<option value="file6">login-demo/internal/controller/saas/pile.go (100.0%)</option>
+				
+				<option value="file7">login-demo/internal/controller/saas/role.go (93.1%)</option>
+				
+				<option value="file8">login-demo/internal/controller/saas/station.go (100.0%)</option>
+				
+				<option value="file9">login-demo/internal/controller/saas/user.go (100.0%)</option>
+				
+				<option value="file10">login-demo/internal/controller/saas/user_pay.go (100.0%)</option>
+				
+				<option value="file11">login-demo/internal/controller/wx/wx_charge.go (93.9%)</option>
+				
+				<option value="file12">login-demo/internal/controller/wx/wx_login.go (0.0%)</option>
+				
+				<option value="file13">login-demo/internal/logic/audit_log.go (71.4%)</option>
+				
+				<option value="file14">login-demo/internal/logic/charge_order.go (11.0%)</option>
+				
+				<option value="file15">login-demo/internal/logic/charge_price.go (0.0%)</option>
+				
+				<option value="file16">login-demo/internal/logic/pile.go (0.0%)</option>
+				
+				<option value="file17">login-demo/internal/logic/role.go (13.2%)</option>
+				
+				<option value="file18">login-demo/internal/logic/role_permission.go (0.0%)</option>
+				
+				<option value="file19">login-demo/internal/logic/station.go (0.0%)</option>
+				
+				<option value="file20">login-demo/internal/logic/tenant.go (23.1%)</option>
+				
+				<option value="file21">login-demo/internal/logic/user.go (17.9%)</option>
+				
+				<option value="file22">login-demo/internal/logic/user_pay.go (0.0%)</option>
+				
+				<option value="file23">login-demo/internal/logic/wx_login.go (18.5%)</option>
+				
+				<option value="file24">login-demo/internal/logic/wx_user.go (0.0%)</option>
+				
+				<option value="file25">login-demo/internal/packed/geo/geo.go (100.0%)</option>
+				
+				<option value="file26">login-demo/internal/packed/jwt/jwt_handler.go (100.0%)</option>
+				
+				<option value="file27">login-demo/internal/packed/sql/parse.go (96.7%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package manager_controller
+
+import (
+        "context"
+        "fmt"
+        v2 "login-demo/api/manager"
+        "login-demo/internal/logic"
+        "login-demo/internal/model"
+        "login-demo/internal/model/do"
+        "math/rand"
+        "time"
+
+        "github.com/gogf/gf/v2/database/gdb"
+        "github.com/gogf/gf/v2/errors/gcode"
+        "github.com/gogf/gf/v2/errors/gerror"
+        "github.com/gogf/gf/v2/frame/g"
+)
+
+// 租户信息
+type TenantController struct {
+}
+
+// 租户筛选框信息
+func (TenantController) SelectList(ctx context.Context, req *v2.TenantSelectListReq) (res []v2.TenantSelectListRes, err error) <span class="cov8" title="1">{
+        model.InitPageReq(&amp;req.PageReq, 1, 10000)
+        tenants, _, err := logic.Tenant.TenantList(ctx, req.PageReq)
+        res = make([]v2.TenantSelectListRes, len(tenants))
+        for i, tenant := range tenants </span><span class="cov8" title="1">{
+                res[i] = v2.TenantSelectListRes{
+                        Id:     tenant.Id,
+                        Name:   tenant.Name,
+                        Domain: tenant.Domain,
+                }
+        }</span>
+        <span class="cov8" title="1">return</span>
+}
+
+// 租户注册
+func (TenantController) Register(ctx context.Context, req *v2.TenantRegisterReq) (res v2.TenantRegisterRes, err error) <span class="cov8" title="1">{
+        if req.ValidCode != "666666" </span><span class="cov0" title="0">{
+                err = gerror.NewCode(gcode.New(1, "验证码错误", "验证码错误"))
+                return
+        }</span>
+        <span class="cov8" title="1">err = g.DB().Transaction(ctx, func(ctx context.Context, tx gdb.TX) error </span><span class="cov8" title="1">{
+                tenantId, err := logic.Tenant.AddAndGetId(ctx, &amp;do.Tenant{
+                        Name:   req.Name,
+                        Domain: req.Domain,
+                })
+                if err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+                // 生成随机数种子
+                <span class="cov8" title="1">rand.Seed(time.Now().UnixNano())
+
+                // 生成月日字符串
+                now := time.Now()
+                month := now.Month()
+                day := now.Day()
+                // 组合成新用户字符串
+                newUserStr := fmt.Sprintf("新用户%s-%s", fmt.Sprintf("%02d%02d", month, day), fmt.Sprintf("%04d", rand.Intn(10000)))
+                _, count, err := logic.User.UserList(ctx, req.AdminUsername, model.PageReq{
+                        PageNo:   1,
+                        PageSize: 10,
+                })
+                if count &gt; 0 </span><span class="cov0" title="0">{
+                        err = gerror.NewCode(gcode.New(611, "该用户名已经注册，请换一个用户名", ""))
+                        return err
+                }</span>
+                <span class="cov8" title="1">if err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+                <span class="cov8" title="1">roleId, err := logic.Role.InitTenantAdmin(ctx, tenantId)
+                if err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+                <span class="cov8" title="1">err = logic.User.AddAndWallet(ctx, &amp;do.User{
+                        Passport: req.AdminUsername,
+                        Password: req.AdminPassword,
+                        Nickname: newUserStr,
+                        TenantId: tenantId,
+                        RoleId:   roleId,
+                })
+                if err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+                <span class="cov8" title="1">return nil</span>
+        })
+        <span class="cov8" title="1">return</span>
+}
+
+// 租户列表
+func (TenantController) List(ctx context.Context, req *v2.TenantListReq) (pageRes model.PageRes, err error) <span class="cov8" title="1">{
+        model.InitPageReq(&amp;req.PageReq, 1, 10)
+        tenants, count, err := logic.Tenant.TenantList(ctx, req.PageReq)
+        res := make([]*v2.TenantListRes, len(tenants))
+        for i, tenant := range tenants </span><span class="cov8" title="1">{
+                res[i] = &amp;v2.TenantListRes{
+                        Id:           tenant.Id,
+                        Name:         tenant.Name,
+                        Domain:       tenant.Domain,
+                        ContactName:  tenant.ContactName,
+                        ContactEmail: tenant.ContactEmail,
+                        ContactPhone: tenant.ContactPhone,
+                        Status:       tenant.Status,
+                        CreateAt:     tenant.CreateAt.Time,
+                        UpdateAt:     tenant.UpdateAt.Time,
+                }
+        }</span>
+        <span class="cov8" title="1">pageRes.List, pageRes.PageNo, pageRes.PageSize, pageRes.TotalCount = res, req.PageNo, req.PageSize, count
+        return</span>
+}
+
+// 租户添加
+func (TenantController) Add(ctx context.Context, req *v2.TenantAddReq) (res *v2.TenantAddRes, err error) <span class="cov8" title="1">{
+        var tenant do.Tenant = do.Tenant{
+                Name:         req.Name,
+                Domain:       req.Domain,
+                ContactName:  req.ContactName,
+                ContactEmail: req.ContactEmail,
+                ContactPhone: req.ContactPhone,
+                Status:       req.Status,
+        }
+        _, err = logic.Tenant.AddAndGetId(ctx, &amp;tenant)
+        return
+}</span>
+
+// 删除租户
+func (TenantController) Del(ctx context.Context, req *v2.TenantDelReq) (res *v2.TenantDelRes, err error) <span class="cov8" title="1">{
+        err = logic.Tenant.Del(ctx, req.Id)
+        return
+}</span>
+
+// 修改租户
+func (TenantController) Update(ctx context.Context, req *v2.TenantUpdateReq) (res *v2.TenantUpdateRes, err error) <span class="cov8" title="1">{
+        tenant := do.Tenant{
+                Id:           req.Id,
+                Name:         req.Name,
+                Domain:       req.Domain,
+                ContactName:  req.ContactName,
+                ContactEmail: req.ContactEmail,
+                ContactPhone: req.ContactPhone,
+                Status:       req.Status,
+        }
+        err = logic.Tenant.Update(ctx, tenant)
+        return
+}</span>
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package controller_saas
+
+import (
+        "context"
+        v2 "login-demo/api/saas"
+        "login-demo/internal/logic"
+        "login-demo/internal/model"
+        "login-demo/internal/model/entity"
+)
+
+type AuditLogController struct {
+}
+
+func (AuditLogController) List(ctx context.Context, req *v2.AuditLogListReq) (pageRes model.PageRes, err error) <span class="cov8" title="1">{
+        // 初始化分页参数，设置默认值
+        model.InitPageReq(&amp;req.PageReq, 1, 10)
+        auditLogs, count, err := logic.AuditLog.List(ctx, req.PageReq, entity.AuditLog{
+                OperationType: req.OperationType,
+                ChangedUser:   req.ChangedUser,
+        })
+        pageRes.List, pageRes.TotalCount, pageRes.PageNo, pageRes.PageSize = auditLogs, count, req.PageNo, req.PageSize
+        return
+}</span>
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package controller_saas
+
+import (
+        "context"
+        v2 "login-demo/api/saas"
+        "login-demo/internal/logic"
+        "login-demo/internal/model"
+        "login-demo/internal/model/do"
+)
+
+// 充电订单
+
+type ChargeOrderController struct {
+}
+
+func (ChargeOrderController) List(ctx context.Context, req *v2.ChargeOrderListReq) (pageRes model.PageRes, err error) <span class="cov8" title="1">{
+
+        // 初始化分页参数，设置默认值
+        model.InitPageReq(&amp;req.PageReq, 1, 10)
+        query := model.ChargeOrderQuery{
+                OrderCode: req.OrderCode,
+                UserId:    req.UserId,
+                StationId: req.StationId,
+                PileId:    req.PileId,
+                BeforeAt:  req.BeforeAt,
+                AfterAt:   req.AfterAt,
+                State:     req.State,
+                PageReq:   req.PageReq,
+        }
+        chargeOrderList, count, err := logic.ChargeOrder.ChargeOrderList(ctx, query)
+        res := make([]v2.ChargeOrderListRes, len(chargeOrderList))
+        for i, v := range chargeOrderList </span><span class="cov8" title="1">{
+                chargeOrderRes := v2.ChargeOrderListRes{
+                        Id:          v.Id,
+                        OrderCode:   v.OrderCode,
+                        UserId:      v.UserId,
+                        Nickname:    v.Nickname,
+                        StationId:   v.StationId,
+                        StationName: v.StationName,
+                        PileId:      v.PileId,
+                        PileCode:    v.PileCode,
+                        StartAt:     v.StartAt,
+                        StopAt:      v.StopAt,
+                        State:       v.State,
+                        Price:       v.Price,
+                        CreateAt:    v.CreateAt,
+                        UpdateAt:    v.UpdateAt,
+                }
+                res[i] = chargeOrderRes
+        }</span>
+        <span class="cov8" title="1">pageRes.List, pageRes.PageNo, pageRes.PageSize, pageRes.TotalCount = res, req.PageNo, req.PageSize, count
+        return</span>
+}
+
+// 修改充电订单状态
+func (ChargeOrderController) Update(ctx context.Context, req *v2.ChargeOrderUpdateReq) (res *v2.ChargeOrderUpdateRes, err error) <span class="cov8" title="1">{
+
+        chargeOrder := do.ChargeOrder{
+                Id:    req.Id,
+                State: req.State,
+                Price: req.Price,
+        }
+        err = logic.ChargeOrder.Update(ctx, chargeOrder)
+        return
+}</span>
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package controller_saas
+
+import (
+        "context"
+        v2 "login-demo/api/saas"
+        "login-demo/internal/logic"
+        "login-demo/internal/model"
+        "login-demo/internal/model/do"
+)
+
+// 充电价格表
+type ChargePriceController struct {
+}
+
+// 时段价格列表
+func (ChargePriceController) List(ctx context.Context, req *v2.ChargePriceListReq) (pageRes model.PageRes, err error) <span class="cov8" title="1">{
+        model.InitPageReq(&amp;req.PageReq, 1, 10)
+        chargePrices, count, err := logic.ChargePrice.ChargePriceList(ctx, req.PageReq)
+        res := make([]v2.ChargePriceListRes, len(chargePrices))
+        for i, chargePrice := range chargePrices </span><span class="cov8" title="1">{
+                res[i] = v2.ChargePriceListRes{
+                        Id:        chargePrice.Id,
+                        TenantId:  chargePrice.TenantId,
+                        StartHour: chargePrice.StartHour,
+                        EndHour:   chargePrice.EndHour,
+                        Price:     chargePrice.Price,
+                        CreateAt:  chargePrice.CreateAt.Time,
+                        UpdateAt:  chargePrice.UpdateAt.Time,
+                }
+        }</span>
+        <span class="cov8" title="1">pageRes.List, pageRes.PageNo, pageRes.PageSize, pageRes.TotalCount = res, req.PageNo, req.PageSize, count
+        return</span>
+}
+
+// 时段价格添加
+func (ChargePriceController) Add(ctx context.Context, req *v2.ChargePriceAddReq) (res *v2.ChargePriceAddRes, err error) <span class="cov8" title="1">{
+        var chargePrice do.ChargePrice = do.ChargePrice{
+                StartHour: req.StartHour,
+                EndHour:   req.EndHour,
+                Price:     req.Price,
+        }
+        err = logic.ChargePrice.Add(ctx, chargePrice)
+        return
+}</span>
+
+// 删除时段价格
+func (ChargePriceController) Del(ctx context.Context, req *v2.ChargePriceDelReq) (res *v2.ChargePriceDelRes, err error) <span class="cov8" title="1">{
+        err = logic.ChargePrice.Del(ctx, req.Id)
+        return
+}</span>
+
+// 修改时段价格
+func (ChargePriceController) Update(ctx context.Context, req *v2.ChargePriceUpdateReq) (res *v2.ChargePriceUpdateRes, err error) <span class="cov8" title="1">{
+        chargePrice := do.ChargePrice{
+                Id:        req.Id,
+                StartHour: req.StartHour,
+                EndHour:   req.EndHour,
+                Price:     req.Price,
+        }
+        err = logic.ChargePrice.Update(ctx, chargePrice)
+        return
+}</span>
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">package controller_saas
+
+import (
+        "context"
+        v2 "login-demo/api/saas"
+        "login-demo/internal/logic"
+        "login-demo/internal/packed/jwt"
+)
+
+// var Login CLogin = CLogin{}
+
+type Login struct {
+}
+
+// 登录
+func (c Login) Login(ctx context.Context, req *v2.LoginReq) (res *v2.LoginRes, err error) <span class="cov8" title="1">{
+        role, tokenString, err := logic.User.Login(ctx, req.Username, req.Password)
+        if err != nil </span><span class="cov8" title="1">{
+                return
+        }</span>
+        <span class="cov8" title="1">res = &amp;v2.LoginRes{
+                Token: tokenString,
+                Role:  role,
+        }
+        return</span>
+}
+
+func (C Login) Refresh(ctx context.Context, req *v2.RefreshReq) (res *v2.RefreshRes, err error) <span class="cov8" title="1">{
+        user, err := logic.User.GetCurrentUser(ctx)
+        if err != nil </span><span class="cov8" title="1">{
+                return
+        }</span>
+        <span class="cov8" title="1">newToken, err := jwt.GenerateToken(ctx, user.Passport)
+        res = &amp;v2.RefreshRes{
+                Token: newToken,
+        }
+        return</span>
+}
+</pre>
+		
+		<pre class="file" id="file5" style="display: none">package controller_saas
+
+import (
+        "context"
+        v2 "login-demo/api/saas"
+        "login-demo/internal/consts"
+        "login-demo/internal/logic"
+        "login-demo/internal/model/do"
+        "strings"
+
+        "github.com/gogf/gf/v2/errors/gcode"
+        "github.com/gogf/gf/v2/errors/gerror"
+        "github.com/gogf/gf/v2/os/gcfg"
+)
+
+type PermissionController struct {
+}
+
+func (PermissionController) List(ctx context.Context, req *v2.PermissionListReq) (rep []v2.PermissionListRes, err error) <span class="cov8" title="1">{
+        config, _ := gcfg.New()
+        err = config.MustGet(ctx, "permissionList").Scan(&amp;rep)
+        tenantId, ok := ctx.Value(consts.TenantIDKey).(int)
+        if !ok </span><span class="cov0" title="0">{
+                err = gerror.NewCode(gcode.New(401, "tenantId 不为空", ""))
+        }</span>
+        <span class="cov8" title="1">if tenantId != 1 </span><span class="cov8" title="1">{
+                tenantIndex := 0
+                for i, val := range rep </span><span class="cov8" title="1">{
+                        if val.Model == "租户管理" </span><span class="cov8" title="1">{
+                                tenantIndex = i
+                        }</span>
+                }
+                <span class="cov8" title="1">tmp := make([]v2.PermissionListRes, len(rep)-1)
+                copy(tmp, rep[:tenantIndex])
+                copy(tmp, rep[tenantIndex+1:])
+                rep = tmp</span>
+        }
+        <span class="cov8" title="1">return</span>
+}
+
+func (PermissionController) Bind(ctx context.Context, req *v2.BindPermissionReq) (rep *v2.BindPermissionRes, err error) <span class="cov8" title="1">{
+        err = logic.RolePermission.Bind(ctx, &amp;do.RolePermission{
+                RoleId:      req.RoleId,
+                Permissions: strings.Join(req.PermissionList, ","),
+        })
+        return
+}</span>
+
+func (PermissionController) CurrentPermissions(ctx context.Context, req *v2.CurrentPermissionReq) (rep *v2.CurrentPermissionRes, err error) <span class="cov8" title="1">{
+        user, err := logic.User.GetCurrentUser(ctx)
+        if err != nil </span><span class="cov0" title="0">{
+                return
+        }</span>
+        <span class="cov8" title="1">rolePermission, err := logic.RolePermission.GetByRoleId(ctx, user.RoleId)
+        if err != nil </span><span class="cov0" title="0">{
+                return
+        }</span>
+        <span class="cov8" title="1">rep = &amp;v2.CurrentPermissionRes{
+                PermissionList: strings.Split(rolePermission.Permissions, ","),
+        }
+        return</span>
+}
+</pre>
+		
+		<pre class="file" id="file6" style="display: none">package controller_saas
+
+import (
+        "context"
+        v2 "login-demo/api/saas"
+        "login-demo/internal/logic"
+        "login-demo/internal/model"
+        "login-demo/internal/model/do"
+        "login-demo/internal/model/entity"
+)
+
+type PileController struct {
+}
+
+// 充电站列表
+func (PileController) List(ctx context.Context, req *v2.PileListReq) (pageRes model.PageRes, err error) <span class="cov8" title="1">{
+        model.InitPageReq(&amp;req.PageReq, 1, 10)
+        query := entity.Pile{
+                StationId: req.StationId,
+                Code:      req.Code,
+        }
+        piles, count, err := logic.Pile.PileList(ctx, query, req.PageReq)
+        res := make([]*v2.PileListRes, len(piles))
+        for i, pile := range piles </span><span class="cov8" title="1">{
+                res[i] = &amp;v2.PileListRes{
+                        Id:          pile.Id,
+                        Code:        pile.Code,
+                        StationId:   pile.StationId,
+                        StationName: pile.Name,
+                        State:       pile.State,
+                        CreateAt:    pile.CreateAt.Time,
+                        UpdateAt:    pile.UpdateAt.Time,
+                }
+        }</span>
+        <span class="cov8" title="1">pageRes.List, pageRes.PageNo, pageRes.PageSize, pageRes.TotalCount = res, req.PageNo, req.PageSize, count
+        return</span>
+}
+
+// 充电站添加
+func (PileController) Add(ctx context.Context, req *v2.PileAddReq) (res *v2.PileAddRes, err error) <span class="cov8" title="1">{
+        var pile do.Pile = do.Pile{
+                Code:      req.Code,
+                StationId: req.StationId,
+                State:     0,
+        }
+        err = logic.Pile.Add(ctx, pile)
+        return
+}</span>
+
+// 删除充电站
+func (PileController) Del(ctx context.Context, req *v2.PileDelReq) (res *v2.PileDelRes, err error) <span class="cov8" title="1">{
+        err = logic.Pile.Del(ctx, req.Id)
+        return
+}</span>
+
+func (PileController) Update(ctx context.Context, req *v2.PileUpdateReq) (res *v2.PileUpdateRes, err error) <span class="cov8" title="1">{
+
+        pile := do.Pile{
+                Id:        req.Id,
+                Code:      req.Code,
+                StationId: req.StationId,
+                State:     req.State,
+        }
+        err = logic.Pile.Update(ctx, pile)
+        return
+}</span>
+</pre>
+		
+		<pre class="file" id="file7" style="display: none">package controller_saas
+
+import (
+        "context"
+        v2 "login-demo/api/saas"
+        "login-demo/internal/consts"
+        "login-demo/internal/logic"
+        "login-demo/internal/model"
+        "login-demo/internal/model/do"
+
+        "github.com/gogf/gf/v2/errors/gcode"
+        "github.com/gogf/gf/v2/errors/gerror"
+)
+
+type RoleController struct {
+}
+
+// 充电站列表
+func (RoleController) List(ctx context.Context, req *v2.RoleListReq) (pageRes model.PageRes, err error) <span class="cov8" title="1">{
+        model.InitPageReq(&amp;req.PageReq, 1, 10)
+        roles, count, err := logic.Role.RoleList(ctx, req.Name, req.PageReq)
+        res := make([]*v2.RoleListRes, len(roles))
+        for i, role := range roles </span><span class="cov8" title="1">{
+                userCount, _ := logic.User.UserCount(ctx, do.User{
+                        RoleId: role.Id,
+                })
+                res[i] = &amp;v2.RoleListRes{
+                        Id:        role.Id,
+                        Name:      role.Name,
+                        BindUsers: userCount,
+                        CreateAt:  role.CreateAt.Time,
+                        UpdateAt:  role.UpdateAt.Time,
+                }
+        }</span>
+        <span class="cov8" title="1">pageRes.List, pageRes.PageNo, pageRes.PageSize, pageRes.TotalCount = res, req.PageNo, req.PageSize, count
+        return</span>
+}
+
+// 充电站添加
+func (RoleController) Add(ctx context.Context, req *v2.RoleAddReq) (res *v2.RoleAddRes, err error) <span class="cov8" title="1">{
+        if req.Name == "" </span><span class="cov8" title="1">{
+                err = gerror.NewCode(gcode.New(401, "角色名不为空", ""))
+                return
+        }</span>
+        <span class="cov8" title="1">tenantId, ok := ctx.Value(consts.TenantIDKey).(int)
+        if !ok </span><span class="cov0" title="0">{
+                err = gerror.NewCode(gcode.New(401, "tenantId 不为空", ""))
+                return
+        }</span>
+        <span class="cov8" title="1">var role do.Role = do.Role{
+                Name:     req.Name,
+                TenantId: tenantId,
+        }
+        err = logic.Role.Add(ctx, &amp;role)
+        return</span>
+}
+
+// 删除充电站
+func (RoleController) Del(ctx context.Context, req *v2.RoleDelReq) (res *v2.RoleDelRes, err error) <span class="cov8" title="1">{
+        if req.Id == 0 </span><span class="cov8" title="1">{
+                err = gerror.NewCode(gcode.New(401, "删除角色失败，id 不能为空", ""))
+                return
+        }</span>
+        <span class="cov8" title="1">err = logic.Role.Del(ctx, req.Id)
+        return</span>
+}
+
+func (RoleController) Update(ctx context.Context, req *v2.RoleUpdateReq) (res *v2.RoleUpdateRes, err error) <span class="cov8" title="1">{
+        if req.Id == 0 </span><span class="cov8" title="1">{
+                err = gerror.NewCode(gcode.New(401, "修改角色失败，id 不能为空", ""))
+                return
+        }</span>
+        <span class="cov8" title="1">role := do.Role{
+                Id:   req.Id,
+                Name: req.Name,
+        }
+        err = logic.Role.Update(ctx, role)
+        return</span>
+}
+</pre>
+		
+		<pre class="file" id="file8" style="display: none">package controller_saas
+
+import (
+        "context"
+        v2 "login-demo/api/saas"
+        "login-demo/internal/logic"
+        "login-demo/internal/model"
+        "login-demo/internal/model/do"
+        "login-demo/internal/model/entity"
+)
+
+type StationController struct {
+}
+
+// 充电站列表
+func (StationController) List(ctx context.Context, req *v2.StationListReq) (pageRes model.PageRes, err error) <span class="cov8" title="1">{
+        model.InitPageReq(&amp;req.PageReq, 1, 10)
+        query := entity.Station{
+                Name:    req.Name,
+                Address: req.Address,
+        }
+        stations, count, err := logic.Station.StationList(ctx, query, req.PageReq)
+        res := make([]*v2.StationListRes, len(stations))
+        for i, station := range stations </span><span class="cov8" title="1">{
+                res[i] = &amp;v2.StationListRes{
+                        Id:         station.Id,
+                        Name:       station.Name,
+                        Address:    station.Address,
+                        Coordinate: station.Coordinate,
+                        TenantName: station.TenantName,
+                        CreateAt:   station.CreateAt.Time,
+                        UpdateAt:   station.UpdateAt.Time,
+                }
+        }</span>
+        <span class="cov8" title="1">pageRes.List, pageRes.PageNo, pageRes.PageSize, pageRes.TotalCount = res, req.PageNo, req.PageSize, count
+        return</span>
+}
+
+// 充电站添加
+func (StationController) Add(ctx context.Context, req *v2.StationAddReq) (res *v2.StationAddRes, err error) <span class="cov8" title="1">{
+        var station do.Station = do.Station{
+                Name:       req.Name,
+                Address:    req.Address,
+                Coordinate: req.Coordinate,
+        }
+        err = logic.Station.Add(ctx, station)
+        return
+}</span>
+
+// 删除充电站
+func (StationController) Del(ctx context.Context, req *v2.StationDelReq) (res *v2.StationDelRes, err error) <span class="cov8" title="1">{
+        err = logic.Station.Del(ctx, req.Id)
+        return
+}</span>
+
+func (StationController) Update(ctx context.Context, req *v2.StationUpdateReq) (res *v2.StationUpdateRes, err error) <span class="cov8" title="1">{
+
+        station := do.Station{
+                Id:         req.Id,
+                Name:       req.Name,
+                Address:    req.Address,
+                Coordinate: req.Coordinate,
+        }
+        err = logic.Station.Update(ctx, station)
+        return
+}</span>
+</pre>
+		
+		<pre class="file" id="file9" style="display: none">package controller_saas
+
+import (
+        "context"
+        v2 "login-demo/api/saas"
+        "login-demo/internal/logic"
+        "login-demo/internal/model"
+        "login-demo/internal/model/do"
+)
+
+type UserController struct {
+}
+
+func (UserController) List(ctx context.Context, req *v2.UserListReq) (pageRes model.PageRes, err error) <span class="cov8" title="1">{
+        // 初始化分页参数，设置默认值
+        model.InitPageReq(&amp;req.PageReq, 1, 10)
+        userList, count, err := logic.User.UserList(ctx, req.Username, req.PageReq)
+        res := make([]v2.UserListRes, len(userList))
+        for i, v := range userList </span><span class="cov8" title="1">{
+                userRes := v2.UserListRes{
+                        Id:         v.Id,
+                        Username:   v.Passport,
+                        Nickname:   v.Nickname,
+                        Balance:    v.Balance,
+                        RoleName:   v.RoleName,
+                        CreateTime: v.CreateAt,
+                }
+                res[i] = userRes
+        }</span>
+        <span class="cov8" title="1">pageRes.List, pageRes.PageNo, pageRes.PageSize, pageRes.TotalCount = res, req.PageNo, req.PageSize, count
+        return</span>
+}
+
+// 添加用户
+func (UserController) Add(ctx context.Context, req *v2.UserAddReq) (res *v2.UserAddRes, err error) <span class="cov8" title="1">{
+        var user do.User = do.User{
+                Passport: req.Username,
+                Nickname: req.Nickname,
+                Password: req.Password,
+        }
+        err = logic.SetCurrentTenantId(ctx, &amp;user.TenantId)
+        if err != nil </span><span class="cov8" title="1">{
+                return
+        }</span>
+        <span class="cov8" title="1">err = logic.User.AddAndWallet(ctx, &amp;user)
+        return</span>
+}
+
+// 删除用户
+func (UserController) Del(ctx context.Context, req *v2.UserDelReq) (res *v2.UserDelRes, err error) <span class="cov8" title="1">{
+        err = logic.User.Del(ctx, req.Id)
+        return
+}</span>
+
+func (UserController) Update(ctx context.Context, req *v2.UserUpdateReq) (res *v2.UserUpdateRes, err error) <span class="cov8" title="1">{
+
+        user := do.User{
+                Id:       req.Id,
+                Passport: req.Username,
+                Nickname: req.Nickname,
+                Password: req.Password,
+        }
+        err = logic.User.Update(ctx, user)
+        return
+}</span>
+</pre>
+		
+		<pre class="file" id="file10" style="display: none">package controller_saas
+
+import (
+        "context"
+        v2 "login-demo/api/saas"
+        "login-demo/internal/logic"
+        "login-demo/internal/model"
+        "login-demo/internal/model/do"
+)
+
+// 用户充值相关
+
+type UserPayController struct {
+}
+
+// 查看用户充值列表
+func (UserPayController) List(ctx context.Context, req *v2.UserPayRecordReq) (pageRes model.PageRes, err error) <span class="cov8" title="1">{
+        // 初始化分页参数，设置默认值
+        model.InitPageReq(&amp;req.PageReq, 1, 10)
+        userPayList, count, err := logic.UserPay.UserPayList(ctx, req.PageReq)
+        res := make([]v2.UserPayRecordRes, len(userPayList))
+        for i, v := range userPayList </span><span class="cov8" title="1">{
+                res[i] = v2.UserPayRecordRes{
+                        Id:       v.Id,
+                        PayCode:  v.PayCode,
+                        UserId:   v.UserId,
+                        Username: v.Username,
+                        State:    v.State,
+                        Price:    v.Price,
+                        PayAt:    v.PayAt,
+                        CreateAt: v.CreateAt,
+                        UpdateAt: v.UpdateAt,
+                }
+        }</span>
+        <span class="cov8" title="1">pageRes.List, pageRes.PageNo, pageRes.PageSize, pageRes.TotalCount = res, req.PageNo, req.PageSize, count
+        return</span>
+}
+
+// 用户充值
+func (UserPayController) Pay(ctx context.Context, req *v2.UserPayReq) (res *v2.UserPayRes, err error) <span class="cov8" title="1">{
+        var userPay do.PayRecord = do.PayRecord{
+                UserId: req.UserId,
+                Price:  req.Price,
+        }
+        err = logic.UserPay.UserPay(ctx, userPay)
+        return
+}</span>
+</pre>
+		
+		<pre class="file" id="file11" style="display: none">package controller_wx
+
+import (
+        "context"
+        v2 "login-demo/api/wx"
+        "login-demo/internal/logic"
+        "login-demo/internal/model"
+        "login-demo/internal/model/do"
+        "login-demo/internal/model/entity"
+        "login-demo/internal/packed/geo"
+        "sort"
+        "time"
+
+        "github.com/gogf/gf/v2/errors/gcode"
+        "github.com/gogf/gf/v2/errors/gerror"
+)
+
+type WxChargeController struct {
+}
+
+// StationList 获取充电站列表，包含充电桩数量和当前价格
+func (c WxChargeController) StationList(ctx context.Context, req *v2.WxStationListReq) (pageRes *model.PageRes, err error) <span class="cov8" title="1">{
+        // 初始化分页参数
+        pageRes = &amp;model.PageRes{}
+        model.InitPageReq(&amp;req.PageReq, 1, 10)
+
+        // 构造查询条件
+        query := entity.Station{
+                Name:    req.Name,
+                Address: req.Address,
+        }
+
+        // 查询充电站列表
+        stations, count, err := logic.Station.StationList(ctx, query, req.PageReq)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        // 获得当前位置
+        <span class="cov8" title="1">myCoordinate := req.Coordinate
+        if myCoordinate == "" </span><span class="cov8" title="1">{
+                // 默认采用延安的位置
+                myCoordinate = "36.5853,109.4898"
+        }</span>
+
+        // 构造响应数据
+        <span class="cov8" title="1">wxStationListRes := make([]*v2.WxStationListRes, len(stations))
+        for i, station := range stations </span><span class="cov8" title="1">{
+
+                // 计算当前位置与充电站的距离
+                distance := geo.GetDistance(myCoordinate, station.Coordinate)
+
+                // 填充充电站基本信息
+                wxStationListRes[i] = &amp;v2.WxStationListRes{
+                        Id:         station.Id,
+                        Name:       station.Name,
+                        TenantId:   station.TenantId,
+                        TenantName: station.TenantName,
+                        Address:    station.Address,
+                        Coordinate: station.Coordinate,
+                        Distance:   distance,
+                        CreateAt:   station.CreateAt.Time,
+                        UpdateAt:   station.UpdateAt.Time,
+                }
+
+                // 查询充电桩数量
+                totalQuery := do.Pile{
+                        StationId: station.Id,
+                }
+                pileTotal, _ := logic.Pile.PileTotal(ctx, totalQuery)
+                freeTotalQuery := do.Pile{
+                        StationId: station.Id,
+                        State:     0,
+                }
+                freePileTotal, _ := logic.Pile.PileTotal(ctx, freeTotalQuery)
+                wxStationListRes[i].PileTotal, wxStationListRes[i].FreePileTotal = pileTotal, freePileTotal
+
+                // 计算价格
+                hour := time.Now().Hour()
+                chargePricesByHour, err := logic.ChargePrice.GetChargePricesByHour(ctx, hour)
+                if err != nil </span><span class="cov0" title="0">{
+                        err = gerror.NewCode(gcode.New(1, "获取充电价格失败", err.Error()))
+                        return nil, err
+                }</span>
+                <span class="cov8" title="1">if len(chargePricesByHour) &gt; 0 </span><span class="cov8" title="1">{
+                        wxStationListRes[i].PricePerHour = chargePricesByHour[0].Price
+                }</span> else<span class="cov0" title="0"> {
+                        // 默认价格 1.5
+                        wxStationListRes[i].PricePerHour = 1.5
+                }</span>
+
+        }
+
+        // 对充电站按距离远近排序
+        <span class="cov8" title="1">sort.Slice(wxStationListRes, func(i, j int) bool </span><span class="cov8" title="1">{
+                return wxStationListRes[i].Distance &lt; wxStationListRes[j].Distance
+        }</span>)
+
+        // 填充分页信息
+        <span class="cov8" title="1">pageRes.List, pageRes.PageNo, pageRes.PageSize, pageRes.TotalCount = wxStationListRes, req.PageNo, req.PageSize, count
+        return</span>
+}
+
+// 充电桩列表
+func (c WxChargeController) PileList(ctx context.Context, req *v2.WxPileListReq) (pageRes model.PageRes, err error) <span class="cov8" title="1">{
+        model.InitPageReq(&amp;req.PageReq, 1, 10)
+        query := entity.Pile{
+                StationId: req.StationId,
+        }
+        piles, count, err := logic.Pile.PileList(ctx, query, req.PageReq)
+        res := make([]*v2.WxPileListRes, len(piles))
+        for i, pile := range piles </span><span class="cov8" title="1">{
+                res[i] = &amp;v2.WxPileListRes{
+                        Id:          pile.Id,
+                        Code:        pile.Code,
+                        StationId:   pile.StationId,
+                        StationName: pile.Name,
+                        State:       pile.State,
+                        CreateAt:    pile.CreateAt.Time,
+                        UpdateAt:    pile.UpdateAt.Time,
+                }
+        }</span>
+        <span class="cov8" title="1">pageRes.List, pageRes.PageNo, pageRes.PageSize, pageRes.TotalCount = res, req.PageNo, req.PageSize, count
+        return</span>
+}
+
+// 开始充电
+func (c WxChargeController) StartCharge(ctx context.Context, req *v2.WXStartChargeReq) (res v2.WXStartChargeRes, err error) <span class="cov8" title="1">{
+        err = logic.ChargeOrder.StartCharge(ctx, req.PileId, req.ChargeHours)
+        return
+}</span>
+
+// 结束充电
+func (c WxChargeController) StopCharge(ctx context.Context, req *v2.WXStopChargeReq) (res v2.WXStopChargeRes, err error) <span class="cov8" title="1">{
+        err = logic.ChargeOrder.StopCharge(ctx, req.OrderId)
+        return
+}</span>
+
+// 我的充电订单
+func (c WxChargeController) MyChargeOrders(ctx context.Context, req *v2.WXChargeListReq) (pageRes model.PageRes, err error) <span class="cov8" title="1">{
+        // 初始化分页参数，设置默认值
+        model.InitPageReq(&amp;req.PageReq, 1, 10)
+        // 获得当前用户
+        currentUser, err := logic.User.GetCurrentUser(ctx)
+        if err != nil </span><span class="cov8" title="1">{
+                err = gerror.NewCode(gcode.New(1, "系统异常", err.Error()))
+                return
+        }</span>
+        <span class="cov8" title="1">query := model.ChargeOrderQuery{
+                UserId:  currentUser.Id,
+                PageReq: req.PageReq,
+        }
+        chargeOrderList, count, err := logic.ChargeOrder.ChargeOrderList(ctx, query)
+        res := make([]v2.WXChargeListRes, len(chargeOrderList))
+        for i, v := range chargeOrderList </span><span class="cov8" title="1">{
+                res[i] = v2.WXChargeListRes{
+                        Id:          v.Id,
+                        OrderCode:   v.OrderCode,
+                        UserId:      v.UserId,
+                        Nickname:    v.Nickname,
+                        StationId:   v.StationId,
+                        StationName: v.StationName,
+                        PileId:      v.PileId,
+                        PileCode:    v.PileCode,
+                        StartAt:     v.StartAt,
+                        StopAt:      v.StopAt,
+                        State:       v.State,
+                        Price:       v.Price,
+                        CreateAt:    v.CreateAt,
+                        UpdateAt:    v.UpdateAt,
+                }
+        }</span>
+        <span class="cov8" title="1">pageRes.List, pageRes.PageNo, pageRes.PageSize, pageRes.TotalCount = res, req.PageNo, req.PageSize, count
+        return</span>
+}
+
+// 我的个人信息
+func (c WxChargeController) AboutMe(ctx context.Context, req *v2.WXMeInfoReq) (res v2.WXMeInfoRes, err error) <span class="cov8" title="1">{
+        // 获得当前用户
+        currentUser, err := logic.User.GetCurrentUser(ctx)
+        if err != nil </span><span class="cov8" title="1">{
+                return
+        }</span>
+        <span class="cov8" title="1">res.Nickname, res.Balance, res.AvatarUrl, res.Username = currentUser.Nickname, currentUser.Balance, currentUser.AvatarUrl, currentUser.Passport
+        return</span>
+}
+
+// 时段价格列表
+func (c WxChargeController) PriceList(ctx context.Context, req *v2.WXPriceListReq) (pageRes model.PageRes, err error) <span class="cov8" title="1">{
+        model.InitPageReq(&amp;req.PageReq, 1, 10)
+        chargePrices, count, err := logic.ChargePrice.ChargePriceList(ctx, req.PageReq)
+        res := make([]v2.WXPriceListRes, len(chargePrices))
+        for i, chargePrice := range chargePrices </span><span class="cov8" title="1">{
+                res[i] = v2.WXPriceListRes{
+                        Id:        chargePrice.Id,
+                        TenantId:  chargePrice.TenantId,
+                        StartHour: chargePrice.StartHour,
+                        EndHour:   chargePrice.EndHour,
+                        Price:     chargePrice.Price,
+                        CreateAt:  chargePrice.CreateAt.Time,
+                        UpdateAt:  chargePrice.UpdateAt.Time,
+                }
+        }</span>
+        <span class="cov8" title="1">pageRes.List, pageRes.PageNo, pageRes.PageSize, pageRes.TotalCount = res, req.PageNo, req.PageSize, count
+        return</span>
+}
+</pre>
+		
+		<pre class="file" id="file12" style="display: none">package controller_wx
+
+import (
+        "context"
+        "database/sql"
+        v2 "login-demo/api/wx"
+        "login-demo/internal/logic"
+        "login-demo/internal/packed/jwt"
+
+        "github.com/gogf/gf/v2/errors/gcode"
+        "github.com/gogf/gf/v2/errors/gerror"
+)
+
+type WxLoginController struct {
+}
+
+func (WxLoginController) Login(ctx context.Context, req *v2.WxLoginReq) (res *v2.WxLoginRes, err error) <span class="cov0" title="0">{
+        code := req.Code
+        data, err := logic.WxLogin.WechatLogin(ctx, code)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        // 将 openid 和 session_key 存储到数据库或缓存中等待后续使用
+        <span class="cov0" title="0">user, err := logic.WxUser.GetUserByOpenID(ctx, data.OpenID)
+        if err != nil </span><span class="cov0" title="0">{
+                if err == sql.ErrNoRows </span><span class="cov0" title="0">{
+                        err = gerror.NewCode(gcode.New(404, "微信登录失败", "用户未注册"))
+                        return
+                }</span>
+                <span class="cov0" title="0">return</span>
+        }
+        <span class="cov0" title="0">token, err := jwt.GenerateToken(ctx, user.Passport)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov0" title="0">res = &amp;v2.WxLoginRes{
+                Token: token,
+        }
+        return</span>
+}
+
+// 注册接口
+func (WxLoginController) Register(ctx context.Context, req *v2.WxRegisterReq) (res *v2.WxRegisterRes, err error) <span class="cov0" title="0">{
+        // 验证验证码
+        err = logic.WxRegister.VerifyCode(ctx, req.Phone, req.VerifyCode)
+        if err != nil </span><span class="cov0" title="0">{
+                err = gerror.NewCode(gcode.New(1, "验证码验证失败", err.Error()))
+                return
+        }</span>
+
+        // 获得微信用户的 openId
+        <span class="cov0" title="0">data, err := logic.WxLogin.WechatLogin(ctx, req.Code)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        // 查询用户是否已经存在
+        <span class="cov0" title="0">_, err = logic.WxUser.GetUserByOpenID(ctx, data.OpenID)
+        if err == nil </span><span class="cov0" title="0">{
+                return nil, gerror.NewCode(gcode.New(1, "用户已经存在，无需注册", "用户已经存在，无需注册"))
+        }</span>
+
+        // 注册新用户
+        <span class="cov0" title="0">token, err := logic.WxRegister.Register(ctx, req.Phone, req.Nickname, req.AvatarUrl, data.OpenID, req.Gender)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov0" title="0">res = &amp;v2.WxRegisterRes{
+                Token: token,
+        }
+
+        return res, nil</span>
+}
+
+// 获取手机号，这个接口无法使用，因为个人小程序不允许获取用户手机号
+func (WxLoginController) GetPhone(ctx context.Context, req *v2.WxGetPhoneReq) (res *v2.WxGetPhoneRes, err error) <span class="cov0" title="0">{
+        res = &amp;v2.WxGetPhoneRes{}
+        phone, err := logic.WxLogin.WechatPhone(ctx, req.Code, req.EncryptedData, req.Iv)
+        if err != nil </span><span class="cov0" title="0">{
+                err = gerror.NewCode(gcode.New(1, "获取微信手机号失败", err.Error()))
+                return
+        }</span>
+        <span class="cov0" title="0">res.Phone = phone.PhoneInfo.PhoneNumber
+        return</span>
+}
+
+// 注册验证码
+func (WxLoginController) SendValidCode(ctx context.Context, req *v2.WxValidCodeReq) (res *v2.WxValidCodeRes, err error) <span class="cov0" title="0">{
+        err = logic.WxLogin.SendValidCode(ctx, req.Phone)
+        return
+}</span>
+</pre>
+		
+		<pre class="file" id="file13" style="display: none">package logic
+
+import (
+        "context"
+        "login-demo/internal/dao"
+        "login-demo/internal/model"
+        "login-demo/internal/model/entity"
+)
+
+type AuditLogLogic struct {
+}
+
+var AuditLog AuditLogLogic
+
+func (AuditLogLogic) List(ctx context.Context, page model.PageReq, auditLogQuery entity.AuditLog) (auditLogs []entity.AuditLog, count int, err error) <span class="cov8" title="1">{
+        auditLogModel := dao.AuditLog.Ctx(ctx).Page(page.PageNo, page.PageSize)
+        if auditLogQuery.OperationType != "" </span><span class="cov0" title="0">{
+                auditLogModel = auditLogModel.WhereLike("operation_type", "%"+auditLogQuery.OperationType+"%")
+        }</span>
+        <span class="cov8" title="1">if auditLogQuery.ChangedUser != "" </span><span class="cov0" title="0">{
+                auditLogModel = auditLogModel.WhereLike("changed_user", "%"+auditLogQuery.ChangedUser+"%")
+        }</span>
+        <span class="cov8" title="1">err = auditLogModel.ScanAndCount(&amp;auditLogs, &amp;count, false)
+        return</span>
+}
+</pre>
+		
+		<pre class="file" id="file14" style="display: none">package logic
+
+import (
+        "context"
+        "fmt"
+        "login-demo/internal/dao"
+        "login-demo/internal/model"
+        "login-demo/internal/model/do"
+        "login-demo/internal/model/entity"
+        "math"
+        "math/rand"
+        "time"
+
+        "github.com/gogf/gf/v2/database/gdb"
+        "github.com/gogf/gf/v2/errors/gcode"
+        "github.com/gogf/gf/v2/errors/gerror"
+        "github.com/gogf/gf/v2/frame/g"
+        "github.com/gogf/gf/v2/os/gtime"
+)
+
+// 充电业务
+
+type ChargeOrderLogic struct {
+}
+
+var ChargeOrder ChargeOrderLogic
+
+func (*ChargeOrderLogic) ChargeOrderList(ctx context.Context, query model.ChargeOrderQuery) (chargeOrders []model.ChargeOrderResult, count int, err error) <span class="cov8" title="1">{
+        model := dao.ChargeOrder.Ctx(ctx).LeftJoin("station", "station.id = charge_order.station_id").LeftJoin("user", "user.id = charge_order.user_id").LeftJoin("pile", "pile.id = charge_order.pile_id")
+        if query.OrderCode != "" </span><span class="cov0" title="0">{
+                model = model.Where("charge_order.order_code like ?", fmt.Sprintf("%%%s%%", query.OrderCode))
+        }</span>
+        <span class="cov8" title="1">if query.StationId != 0 </span><span class="cov0" title="0">{
+                model = model.Where("charge_order.station_id = ?", query.StationId)
+        }</span>
+        <span class="cov8" title="1">if query.UserId != 0 </span><span class="cov0" title="0">{
+                model = model.Where("charge_order.user_id = ?", query.UserId)
+        }</span>
+        <span class="cov8" title="1">if query.StationId != 0 </span><span class="cov0" title="0">{
+                model = model.Where("charge_order.station_id = ?", query.StationId)
+        }</span>
+        <span class="cov8" title="1">if query.PileId != 0 </span><span class="cov0" title="0">{
+                model = model.Where("charge_order.pile_id = ?", query.PileId)
+        }</span>
+        <span class="cov8" title="1">if !query.BeforeAt.Equal(time.Time{}) </span><span class="cov0" title="0">{
+                model = model.Where("charge_order.start_at &gt; ?", query.BeforeAt)
+        }</span>
+        <span class="cov8" title="1">if !query.AfterAt.Equal(time.Time{}) </span><span class="cov0" title="0">{
+                model = model.Where("charge_order.start_at &lt; ?", query.AfterAt)
+        }</span>
+        <span class="cov8" title="1">if query.State != 0 </span><span class="cov0" title="0">{
+                model = model.Where("charge_order.state = ?", query.State)
+        }</span>
+        <span class="cov8" title="1">count, err = model.Count()
+        if count == 0 </span><span class="cov0" title="0">{
+                return
+        }</span>
+        <span class="cov8" title="1">if err != nil </span><span class="cov0" title="0">{
+                return
+        }</span>
+        <span class="cov8" title="1">err = model.Fields("charge_order.*, station.name as station_name, pile.code as pile_code, user.nickname as nickname").OrderDesc("charge_order.update_at").Page(query.PageNo, query.PageSize).Scan(&amp;chargeOrders)
+        return</span>
+}
+
+func (*ChargeOrderLogic) Update(ctx context.Context, update do.ChargeOrder) error <span class="cov0" title="0">{
+        update.UpdateAt = gtime.Now()
+        rs, err := dao.ChargeOrder.Ctx(ctx).Update(update, "id=?", update.Id)
+        if err != nil </span><span class="cov0" title="0">{
+                return gerror.WrapCode(gcode.New(1, "系统异常，修改失败", ""), err)
+        }</span>
+        <span class="cov0" title="0">rowsAffected, err := rs.RowsAffected()
+        if err != nil </span><span class="cov0" title="0">{
+                return gerror.WrapCode(gcode.New(1, "系统异常，修改失败", ""), err)
+        }</span>
+        <span class="cov0" title="0">if rowsAffected == 0 </span><span class="cov0" title="0">{
+                err = gerror.NewCode(gcode.New(1, "修改失败，未找到修改原数据，可能已被删除", ""))
+                return err
+        }</span>
+        <span class="cov0" title="0">return nil</span>
+}
+
+// 开始充电
+// 先不支持按小时充电，需要修改数据库
+func (*ChargeOrderLogic) StartCharge(ctx context.Context, pileId int, chargeHours int) (err error) <span class="cov0" title="0">{
+        // 获得当前用户
+        currentUser, err := User.GetCurrentUser(ctx)
+        if err != nil </span><span class="cov0" title="0">{
+                err = gerror.NewCode(gcode.New(1, "获取当前用户失败，请重新登录", err))
+                return err
+        }</span>
+        // 开启事务
+        <span class="cov0" title="0">err = g.DB().Transaction(ctx, func(ctx context.Context, tx gdb.TX) error </span><span class="cov0" title="0">{
+                // 1. 修改充电桩转态为充电
+                pile := &amp;entity.Pile{}
+                err = dao.Pile.Ctx(ctx).Where("id=?", pileId).Scan(pile)
+                if err != nil </span><span class="cov0" title="0">{
+                        err = gerror.NewCode(gcode.New(1, "找不到充电桩信息", err.Error()))
+                        return err
+                }</span>
+                <span class="cov0" title="0">if pile.State != 0 </span><span class="cov0" title="0">{
+                        err = gerror.NewCode(gcode.New(1, "充电桩状态异常", "充电桩状态异常无法充电，请更换另一个充电桩"))
+                        return err
+                }</span>
+                <span class="cov0" title="0">pile.State = 1
+                pile.UpdateAt = gtime.Now()
+                _, err = dao.Pile.Ctx(ctx).Update(pile, "id=?", pile.Id)
+                if err != nil </span><span class="cov0" title="0">{
+                        err = gerror.NewCode(gcode.New(1, "系统异常", err.Error()))
+                        return err
+                }</span>
+
+                // 2. 生成充电订单
+                <span class="cov0" title="0">chargeOrder := do.ChargeOrder{
+                        OrderCode: fmt.Sprintf("%s-%d", time.Now().Format("200601021504"), rand.Intn(10000)),
+                        StationId: pile.StationId,
+                        PileId:    pile.Id,
+                        UserId:    currentUser.Id,
+                        StartAt:   gtime.Now(),
+                        State:     0,
+                        TenantId:  pile.TenantId,
+                        CreateAt:  gtime.Now(),
+                        UpdateAt:  gtime.Now(),
+                }
+                _, err = dao.ChargeOrder.Ctx(ctx).Insert(chargeOrder)
+                return err</span>
+        })
+        <span class="cov0" title="0">return</span>
+}
+
+// 结束充电
+func (*ChargeOrderLogic) StopCharge(ctx context.Context, orderId int) (err error) <span class="cov0" title="0">{
+        // 开启事务
+        err = g.DB().Transaction(ctx, func(ctx context.Context, tx gdb.TX) error </span><span class="cov0" title="0">{
+                // 1. 查询充电订单记录并锁定
+                chargeOrderFind := &amp;entity.ChargeOrder{}
+                err = dao.ChargeOrder.Ctx(ctx).Where("id=?", orderId).Scan(chargeOrderFind)
+                if err != nil </span><span class="cov0" title="0">{
+                        return gerror.NewCode(gcode.New(1, "未找到充电订单", err.Error()))
+                }</span>
+                <span class="cov0" title="0">if chargeOrderFind.State != 0 </span><span class="cov0" title="0">{
+                        return gerror.NewCode(gcode.New(1, "该充电订单已经结束", ""))
+                }</span>
+                <span class="cov0" title="0">chargePrices, _, err := ChargePrice.ChargePriceList(ctx, model.PageReq{})
+                if err != nil </span><span class="cov0" title="0">{
+                        return gerror.NewCode(gcode.New(1, "未找到价格", err.Error()))
+                }</span>
+
+                // 2. 订单结束，计算金额
+                <span class="cov0" title="0">hourlyRates := make([]HourlyRate, len(chargePrices))
+                for i, price := range chargePrices </span><span class="cov0" title="0">{
+                        hourlyRates[i].StartHour = price.StartHour
+                        hourlyRates[i].EndHour = price.EndHour
+                        hourlyRates[i].Rate = float64(price.Price)
+                }</span>
+                <span class="cov0" title="0">amount := CalculateAmount(chargeOrderFind.StartAt.Time, gtime.Now().Time, hourlyRates)
+
+                // 3. 修改订单价格
+                chargeOrderFind.State, chargeOrderFind.StopAt, chargeOrderFind.Price = 1, gtime.Now(), amount
+                _, err = dao.ChargeOrder.Ctx(ctx).Update(chargeOrderFind, "id=?", chargeOrderFind.Id)
+                if err != nil </span><span class="cov0" title="0">{
+                        return gerror.WrapCode(gcode.New(1, "修改订单状态失败", err), err)
+                }</span>
+
+                // 4. 充电桩可用状态释放
+                <span class="cov0" title="0">err = ReleasePile(ctx, chargeOrderFind.PileId)
+                if err != nil </span><span class="cov0" title="0">{
+                        return gerror.WrapCode(gcode.New(1, "释放充电桩失败", err), err)
+                }</span>
+                // 5. 用户扣除对应余额
+                <span class="cov0" title="0">err = DeductUserBalance(ctx, chargeOrderFind.UserId, amount)
+                if err != nil </span><span class="cov0" title="0">{
+                        return gerror.WrapCode(gcode.New(1, "扣除用户金额失败", err), err)
+                }</span>
+                <span class="cov0" title="0">return nil</span>
+        })
+        <span class="cov0" title="0">return</span>
+}
+
+// 充电桩可用状态释放
+func ReleasePile(ctx context.Context, pileId int) error <span class="cov0" title="0">{
+        pileFind := &amp;entity.Pile{}
+        err := dao.Pile.Ctx(ctx).Where("id=?", pileId).Scan(pileFind)
+        if err != nil </span><span class="cov0" title="0">{
+                return gerror.NewCode(gcode.New(1, "获取充电桩失败", err.Error()))
+        }</span>
+        <span class="cov0" title="0">if pileFind.State != 1 </span><span class="cov0" title="0">{
+                return gerror.NewCode(gcode.New(1, "充电桩状态异常", fmt.Sprintf("当前充电桩状态%d", pileFind.State)))
+        }</span>
+        <span class="cov0" title="0">pileFind.State = 0
+        _, err = dao.Pile.Ctx(ctx).Update(pileFind, "id=?", pileFind.Id)
+        if err != nil </span><span class="cov0" title="0">{
+                return gerror.NewCode(gcode.New(1, "获取充电桩失败", err.Error()))
+        }</span>
+        <span class="cov0" title="0">return err</span>
+}
+
+// 用户扣除对应余额
+func DeductUserBalance(ctx context.Context, userId int, amount float64) error <span class="cov0" title="0">{
+        userWalletFind := &amp;entity.UserWallet{}
+        err := dao.UserWallet.Ctx(ctx).Where("user_id=?", userId).Scan(userWalletFind)
+        if err != nil </span><span class="cov0" title="0">{
+                return gerror.NewCode(gcode.New(1, "未找到用户金额信息", err.Error()))
+        }</span>
+        <span class="cov0" title="0">userWalletFind.Balance = userWalletFind.Balance - amount
+        _, err = dao.UserWallet.Ctx(ctx).Update(userWalletFind, "user_id=?", userWalletFind.UserId)
+        if err != nil </span><span class="cov0" title="0">{
+                return gerror.NewCode(gcode.New(1, "修改用户金额失败", err.Error()))
+        }</span>
+        <span class="cov0" title="0">return err</span>
+}
+
+type HourlyRate struct {
+        StartHour int     // 起始小时数
+        EndHour   int     // 结束小时数
+        Rate      float64 // 每小时费率
+}
+
+// 计算费率
+func CalculateAmount(startTime, endTime time.Time, hourlyRates []HourlyRate) float64 <span class="cov0" title="0">{
+        var (
+                amount float64 // 总金额
+                hours  int     // 总小时数
+                mins   int     // 总分钟数
+        )
+
+        // 计算总小时数和总分钟数
+        duration := endTime.Sub(startTime)
+        hours = int(duration.Hours())
+        mins = int(duration.Minutes()) % 60
+
+        // 计算总金额
+        for i := 0; i &lt; hours; i++ </span><span class="cov0" title="0">{
+                var rate float64
+                for _, hourlyRate := range hourlyRates </span><span class="cov0" title="0">{
+                        if startTime.Hour() &gt;= hourlyRate.StartHour &amp;&amp; startTime.Hour() &lt; hourlyRate.EndHour </span><span class="cov0" title="0">{
+                                rate = hourlyRate.Rate
+                                break</span>
+                        }
+                }
+                <span class="cov0" title="0">amount += rate
+                startTime = startTime.Add(time.Hour)</span>
+        }
+
+        // 如果还有不足一小时的时间，按照半小时计算
+        <span class="cov0" title="0">if mins &gt; 0 </span><span class="cov0" title="0">{
+                var rate float64
+                for _, hourlyRate := range hourlyRates </span><span class="cov0" title="0">{
+                        if startTime.Hour() &gt;= hourlyRate.StartHour &amp;&amp; startTime.Hour() &lt; hourlyRate.EndHour </span><span class="cov0" title="0">{
+                                rate = hourlyRate.Rate
+                                break</span>
+                        }
+                }
+                <span class="cov0" title="0">amount += rate / 2</span>
+        }
+        // 四舍五入第一位小数点，解决 float 精度问题
+        <span class="cov0" title="0">amount = math.Round(amount*10) / 10
+        return amount</span>
+}
+</pre>
+		
+		<pre class="file" id="file15" style="display: none">package logic
+
+import (
+        "context"
+        "login-demo/internal/dao"
+        "login-demo/internal/model"
+        "login-demo/internal/model/do"
+        "login-demo/internal/model/entity"
+
+        "github.com/gogf/gf/v2/errors/gcode"
+        "github.com/gogf/gf/v2/errors/gerror"
+        "github.com/gogf/gf/v2/os/gtime"
+)
+
+// 时段价格表
+
+var ChargePrice ChargePriceLogic
+
+type ChargePriceLogic struct {
+}
+
+func (*ChargePriceLogic) ChargePriceList(ctx context.Context, page model.PageReq) (chargePrices []entity.ChargePrice, count int, err error) <span class="cov0" title="0">{
+        err = dao.ChargePrice.Ctx(ctx).Page(page.PageNo, page.PageSize).OrderAsc("start_hour").ScanAndCount(&amp;chargePrices, &amp;count, false)
+        return
+}</span>
+
+func (*ChargePriceLogic) Add(ctx context.Context, chargePrice do.ChargePrice) (err error) <span class="cov0" title="0">{
+        chargePrice.CreateAt, chargePrice.UpdateAt = gtime.Now(), gtime.Now()
+        err = SetCurrentTenantId(ctx, &amp;(chargePrice.TenantId))
+        if err != nil </span><span class="cov0" title="0">{
+                return
+        }</span>
+        <span class="cov0" title="0">_, err = dao.ChargePrice.Ctx(ctx).Insert(chargePrice)
+        return</span>
+}
+
+func (*ChargePriceLogic) Del(ctx context.Context, id int) (err error) <span class="cov0" title="0">{
+        rs, err := dao.ChargePrice.Ctx(ctx).Delete("id = ?", id)
+        if err != nil </span><span class="cov0" title="0">{
+                return gerror.WrapCode(gcode.New(1, "系统异常，删除失败", ""), err)
+        }</span>
+        <span class="cov0" title="0">rowsAffected, err := rs.RowsAffected()
+        if err != nil </span><span class="cov0" title="0">{
+                return gerror.WrapCode(gcode.New(1, "系统异常，删除失败", ""), err)
+        }</span>
+        <span class="cov0" title="0">if rowsAffected == 0 </span><span class="cov0" title="0">{
+                err = gerror.NewCode(gcode.New(1, "删除失败，未找到原数据，可能已被其他人删除", ""))
+                return err
+        }</span>
+        <span class="cov0" title="0">return</span>
+}
+
+func (*ChargePriceLogic) Update(ctx context.Context, chargePrice do.ChargePrice) (err error) <span class="cov0" title="0">{
+        chargePrice.UpdateAt = gtime.Now()
+        rs, err := dao.ChargePrice.Ctx(ctx).Update(chargePrice, "id = ?", chargePrice.Id)
+        if err != nil </span><span class="cov0" title="0">{
+                return gerror.WrapCode(gcode.New(1, "系统异常，修改失败", ""), err)
+        }</span>
+        <span class="cov0" title="0">rowsAffected, err := rs.RowsAffected()
+        if err != nil </span><span class="cov0" title="0">{
+                return gerror.WrapCode(gcode.New(1, "系统异常，修改失败", ""), err)
+        }</span>
+        <span class="cov0" title="0">if rowsAffected == 0 </span><span class="cov0" title="0">{
+                err = gerror.NewCode(gcode.New(1, "修改失败，未找到原数据，可能已被其他人删除", ""))
+                return err
+        }</span>
+        <span class="cov0" title="0">return</span>
+}
+
+// GetChargePricesByHour 根据小时数获取对应的收费价格
+func (*ChargePriceLogic) GetChargePricesByHour(ctx context.Context, targetHour int) (matchingPrices []entity.ChargePrice, err error) <span class="cov0" title="0">{
+        err = dao.ChargePrice.Ctx(ctx).WhereLTE("start_hour", targetHour).WhereGT("end_hour", targetHour).Scan(&amp;matchingPrices)
+        return
+}</span>
+</pre>
+		
+		<pre class="file" id="file16" style="display: none">package logic
+
+import (
+        "context"
+        "fmt"
+        "login-demo/internal/dao"
+        "login-demo/internal/model"
+        "login-demo/internal/model/do"
+        "login-demo/internal/model/entity"
+
+        "github.com/gogf/gf/v2/errors/gcode"
+        "github.com/gogf/gf/v2/errors/gerror"
+        "github.com/gogf/gf/v2/os/gtime"
+)
+
+var Pile PileLogic
+
+type PileLogic struct {
+}
+
+func (*PileLogic) PileList(ctx context.Context, query entity.Pile, page model.PageReq) (piles []model.Pile, count int, err error) <span class="cov0" title="0">{
+        model := dao.Pile.Ctx(ctx).LeftJoin("station", "station.id = pile.station_id")
+        if query.StationId != 0 </span><span class="cov0" title="0">{
+                model = model.Where("pile.station_id = ?", query.StationId)
+        }</span>
+        <span class="cov0" title="0">if query.Code != "" </span><span class="cov0" title="0">{
+                model = model.Where("pile.code like ?", fmt.Sprintf("%%%s%%", query.Code))
+        }</span>
+        <span class="cov0" title="0">model.Fields("pile.*, station.name").OrderDesc("pile.update_at").Page(page.PageNo, page.PageSize).ScanAndCount(&amp;piles, &amp;count, false)
+        return</span>
+}
+
+// 获取充电桩数量
+func (*PileLogic) PileTotal(ctx context.Context, query do.Pile) (count int, err error) <span class="cov0" title="0">{
+        model := dao.Pile.Ctx(ctx).LeftJoin("station", "station.id = pile.station_id")
+        if query.StationId != nil </span><span class="cov0" title="0">{
+                model = model.Where("pile.station_id = ?", query.StationId)
+        }</span>
+        <span class="cov0" title="0">if query.Code != nil </span><span class="cov0" title="0">{
+                model = model.Where("pile.code like ?", fmt.Sprintf("%%%s%%", query.Code))
+        }</span>
+        <span class="cov0" title="0">if query.State != nil </span><span class="cov0" title="0">{
+                model = model.Where("pile.state = ?", query.State)
+        }</span>
+        <span class="cov0" title="0">count, err = model.Count()
+        return</span>
+}
+
+// 查询订单并关联充电站信息
+// func QueryOrders(ctx context.Context) (gdb.Result, error) {
+//     return dao.Pile.Ctx(ctx).Join("user u", "u.id = order.user_id").Fields("order.*, u.name").Select()
+// }
+
+func (*PileLogic) Add(ctx context.Context, pile do.Pile) (err error) <span class="cov0" title="0">{
+        pile.CreateAt, pile.UpdateAt = gtime.Now(), gtime.Now()
+        err = SetCurrentTenantId(ctx, &amp;pile.TenantId)
+        if err != nil </span><span class="cov0" title="0">{
+                return
+        }</span>
+        <span class="cov0" title="0">_, err = dao.Pile.Ctx(ctx).Insert(pile)
+        return</span>
+}
+
+func (*PileLogic) Del(ctx context.Context, id int) (err error) <span class="cov0" title="0">{
+        rs, err := dao.Pile.Ctx(ctx).Delete("id = ?", id)
+        if err != nil </span><span class="cov0" title="0">{
+                return gerror.WrapCode(gcode.New(1, "系统异常，删除失败", ""), err)
+        }</span>
+        <span class="cov0" title="0">rowsAffected, err := rs.RowsAffected()
+        if err != nil </span><span class="cov0" title="0">{
+                return gerror.WrapCode(gcode.New(1, "系统异常，删除失败", ""), err)
+        }</span>
+        <span class="cov0" title="0">if rowsAffected == 0 </span><span class="cov0" title="0">{
+                err = gerror.NewCode(gcode.New(1, "删除失败，未找到原数据，可能已被其他人删除", ""))
+                return err
+        }</span>
+        <span class="cov0" title="0">return</span>
+}
+
+func (*PileLogic) Update(ctx context.Context, pile do.Pile) (err error) <span class="cov0" title="0">{
+        pile.UpdateAt = gtime.Now()
+        rs, err := dao.Pile.Ctx(ctx).Update(pile, "id = ?", pile.Id)
+        if err != nil </span><span class="cov0" title="0">{
+                return gerror.WrapCode(gcode.New(1, "系统异常，修改失败", ""), err)
+        }</span>
+        <span class="cov0" title="0">rowsAffected, err := rs.RowsAffected()
+        if err != nil </span><span class="cov0" title="0">{
+                return gerror.WrapCode(gcode.New(1, "系统异常，修改失败", ""), err)
+        }</span>
+        <span class="cov0" title="0">if rowsAffected == 0 </span><span class="cov0" title="0">{
+                err = gerror.NewCode(gcode.New(1, "修改失败，未找到原数据，可能已被其他人删除", ""))
+                return err
+        }</span>
+        <span class="cov0" title="0">return</span>
+}
+</pre>
+		
+		<pre class="file" id="file17" style="display: none">package logic
+
+import (
+        "context"
+        "fmt"
+        "login-demo/internal/consts"
+        "login-demo/internal/dao"
+        "login-demo/internal/model"
+        "login-demo/internal/model/do"
+        "login-demo/internal/model/entity"
+
+        "github.com/gogf/gf/v2/errors/gcode"
+        "github.com/gogf/gf/v2/errors/gerror"
+        "github.com/gogf/gf/v2/os/gtime"
+)
+
+type LogicRole struct {
+}
+
+var (
+        Role = LogicRole{}
+)
+
+func (*LogicRole) RoleList(ctx context.Context, rolename string, page model.PageReq) (roles []entity.Role, count int, err error) <span class="cov8" title="1">{
+        model := dao.Role.Ctx(ctx)
+        if rolename != "" </span><span class="cov8" title="1">{
+                model = model.WhereLike("name", fmt.Sprintf("%%%s%%", rolename))
+        }</span>
+        <span class="cov8" title="1">err = model.OrderDesc("role.update_at").Page(page.PageNo, page.PageSize).ScanAndCount(&amp;roles, &amp;count, false)
+        return</span>
+}
+
+func (*LogicRole) Add(ctx context.Context, role *do.Role) (err error) <span class="cov0" title="0">{
+        role.CreateAt, role.UpdateAt = gtime.Now(), gtime.Now()
+        err = SetCurrentTenantId(ctx, &amp;role.TenantId)
+        if err != nil </span><span class="cov0" title="0">{
+                return
+        }</span>
+        <span class="cov0" title="0">_, err = dao.Role.Ctx(ctx).Insert(role)
+        return</span>
+}
+
+func (*LogicRole) Del(ctx context.Context, id int) (err error) <span class="cov0" title="0">{
+        _, err = dao.Role.Ctx(ctx).Delete("id = ?", id)
+        return
+}</span>
+
+func (*LogicRole) Update(ctx context.Context, role do.Role) (err error) <span class="cov0" title="0">{
+        role.UpdateAt = gtime.Now()
+        _, err = dao.Role.Ctx(ctx).Update(role, "id = ?", role.Id)
+        return
+}</span>
+
+// 从 context 取出 Role 信息
+func (*LogicRole) GetCurrentRole(ctx context.Context) (role entity.Role, err error) <span class="cov0" title="0">{
+        user, err := User.GetCurrentUser(ctx)
+        if err != nil </span><span class="cov0" title="0">{
+                err = gerror.NewCode(gcode.New(1, "系统异常，未找到登录用户信息", ""))
+                return
+        }</span>
+        <span class="cov0" title="0">record, err := dao.Role.Ctx(ctx).Where("id", user.RoleId).One()
+        if err != nil </span><span class="cov0" title="0">{
+                err = gerror.NewCode(gcode.New(1, "系统异常，未找到登录角色信息", ""))
+                return
+        }</span>
+        <span class="cov0" title="0">record.Struct(&amp;role)
+        return</span>
+}
+
+// 初始化租户管理员权限
+func (*LogicRole) InitTenantAdmin(ctx context.Context, tenantId int) (roleId int, err error) <span class="cov0" title="0">{
+        insertRole := do.Role{
+                Name:     consts.AdminRoleName,
+                TenantId: tenantId,
+        }
+        id, err := dao.Role.Ctx(ctx).InsertAndGetId(insertRole)
+        roleId = int(id)
+        if err != nil </span><span class="cov0" title="0">{
+                err = gerror.WrapCode(gcode.New(1, "系统异常，添加角色失败", ""), err)
+                return
+        }</span>
+        <span class="cov0" title="0">insertRolePermission := do.RolePermission{
+                RoleId:      roleId,
+                TenantId:    tenantId,
+                Permissions: consts.AdminRolePermission,
+                CreateAt:    gtime.Now(),
+                UpdateAt:    gtime.Now(),
+        }
+        _, err = dao.RolePermission.Ctx(ctx).Insert(insertRolePermission)
+        if err != nil </span><span class="cov0" title="0">{
+                err = gerror.WrapCode(gcode.New(1, "系统异常，添加权限失败", ""), err)
+                return
+        }</span>
+        <span class="cov0" title="0">return</span>
+}
+</pre>
+		
+		<pre class="file" id="file18" style="display: none">package logic
+
+import (
+        "context"
+        "login-demo/internal/dao"
+        "login-demo/internal/model/do"
+        "login-demo/internal/model/entity"
+
+        "github.com/gogf/gf/v2/errors/gcode"
+        "github.com/gogf/gf/v2/errors/gerror"
+        "github.com/gogf/gf/v2/os/gtime"
+)
+
+type LogicRolePermission struct {
+}
+
+var (
+        RolePermission = LogicRolePermission{}
+)
+
+func (*LogicRolePermission) Bind(ctx context.Context, rolePermission *do.RolePermission) (err error) <span class="cov0" title="0">{
+        rolePermission.UpdateAt = gtime.Now()
+        _, err = dao.RolePermission.Ctx(ctx).Where("role_id", rolePermission.RoleId.(int)).One()
+        if err != nil </span><span class="cov0" title="0">{
+                return
+        }</span>
+        <span class="cov0" title="0">err = SetCurrentTenantId(ctx, &amp;rolePermission.TenantId)
+        if err != nil </span><span class="cov0" title="0">{
+                return
+        }</span>
+        <span class="cov0" title="0">_, err = dao.RolePermission.Ctx(ctx).Replace(rolePermission)
+        return</span>
+}
+
+func (*LogicRolePermission) GetByRoleId(ctx context.Context, roleId int) (rolePermission entity.RolePermission, err error) <span class="cov0" title="0">{
+        rolePermission.UpdateAt = gtime.Now()
+        userRecord, err := dao.RolePermission.Ctx(ctx).Where("role_id", roleId).One()
+        if err != nil </span><span class="cov0" title="0">{
+                return
+        }</span>
+        <span class="cov0" title="0">if userRecord.IsEmpty() </span><span class="cov0" title="0">{
+                err = gerror.NewCode(gcode.New(404, "没有找到权限信息，请检查角色是否绑定权限", ""))
+                return
+        }</span>
+        <span class="cov0" title="0">userRecord.Struct(&amp;rolePermission)
+        return</span>
+}
+</pre>
+		
+		<pre class="file" id="file19" style="display: none">package logic
+
+import (
+        "context"
+        "fmt"
+        "login-demo/internal/dao"
+        "login-demo/internal/model"
+        "login-demo/internal/model/do"
+        "login-demo/internal/model/entity"
+
+        "github.com/gogf/gf/v2/errors/gcode"
+        "github.com/gogf/gf/v2/errors/gerror"
+        "github.com/gogf/gf/v2/os/gtime"
+)
+
+var Station StationLogic
+
+type StationLogic struct {
+}
+
+func (*StationLogic) StationList(ctx context.Context, query entity.Station, page model.PageReq) (stations []model.Station, count int, err error) <span class="cov0" title="0">{
+        err = dao.Station.Ctx(ctx).InnerJoin("tenant", "station.tenant_id = tenant.id").WhereLike("station.name", fmt.Sprintf("%%%s%%", query.Name)).WhereLike("station.address", fmt.Sprintf("%%%s%%", query.Address)).OrderDesc("station.update_at").Fields("station.*,tenant.name as tenantName").Page(page.PageNo, page.PageSize).ScanAndCount(&amp;stations, &amp;count, false)
+        return
+}</span>
+
+func (*StationLogic) Add(ctx context.Context, station do.Station) (err error) <span class="cov0" title="0">{
+        station.CreateAt, station.UpdateAt = gtime.Now(), gtime.Now()
+        err = SetCurrentTenantId(ctx, &amp;station.TenantId)
+        if err != nil </span><span class="cov0" title="0">{
+                return
+        }</span>
+        <span class="cov0" title="0">_, err = dao.Station.Ctx(ctx).Insert(station)
+        return</span>
+}
+
+func (*StationLogic) Del(ctx context.Context, id int) (err error) <span class="cov0" title="0">{
+        rs, err := dao.Station.Ctx(ctx).Delete("id = ?", id)
+        if err != nil </span><span class="cov0" title="0">{
+                return gerror.WrapCode(gcode.New(1, "系统异常，删除失败", ""), err)
+        }</span>
+        <span class="cov0" title="0">rowsAffected, err := rs.RowsAffected()
+        if err != nil </span><span class="cov0" title="0">{
+                return gerror.WrapCode(gcode.New(1, "系统异常，删除失败", ""), err)
+        }</span>
+        <span class="cov0" title="0">if rowsAffected == 0 </span><span class="cov0" title="0">{
+                err = gerror.NewCode(gcode.New(1, "删除失败，未找到原数据，可能已被其他人删除", ""))
+                return err
+        }</span>
+        <span class="cov0" title="0">return</span>
+}
+
+func (*StationLogic) Update(ctx context.Context, station do.Station) (err error) <span class="cov0" title="0">{
+        station.UpdateAt = gtime.Now()
+        rs, err := dao.Station.Ctx(ctx).Update(station, "id = ?", station.Id)
+        if err != nil </span><span class="cov0" title="0">{
+                return gerror.WrapCode(gcode.New(1, "系统异常，修改失败", ""), err)
+        }</span>
+        <span class="cov0" title="0">rowsAffected, err := rs.RowsAffected()
+        if err != nil </span><span class="cov0" title="0">{
+                return gerror.WrapCode(gcode.New(1, "系统异常，修改失败", ""), err)
+        }</span>
+        <span class="cov0" title="0">if rowsAffected == 0 </span><span class="cov0" title="0">{
+                err = gerror.NewCode(gcode.New(1, "修改失败，未找到原数据，可能已被其他人删除", ""))
+                return err
+        }</span>
+        <span class="cov0" title="0">return</span>
+}
+</pre>
+		
+		<pre class="file" id="file20" style="display: none">package logic
+
+import (
+        "context"
+        "login-demo/internal/consts"
+        "login-demo/internal/dao"
+        "login-demo/internal/model"
+        "login-demo/internal/model/do"
+        "login-demo/internal/model/entity"
+
+        "github.com/gogf/gf/v2/errors/gcode"
+        "github.com/gogf/gf/v2/errors/gerror"
+        "github.com/gogf/gf/v2/os/gtime"
+)
+
+type TenantLogic struct {
+}
+
+var (
+        Tenant = TenantLogic{}
+)
+
+func (*TenantLogic) TenantList(ctx context.Context, page model.PageReq) (tenants []entity.Tenant, count int, err error) <span class="cov0" title="0">{
+        err = dao.Tenant.Ctx(ctx).Page(page.PageNo, page.PageSize).OrderAsc("update_at").ScanAndCount(&amp;tenants, &amp;count, false)
+        return
+}</span>
+
+func (*TenantLogic) AddAndGetId(ctx context.Context, tenant *do.Tenant) (tenantId int, err error) <span class="cov0" title="0">{
+        tenant.CreateAt, tenant.UpdateAt, tenant.Status = gtime.Now(), gtime.Now(), "active"
+        id, err := dao.Tenant.Ctx(ctx).InsertAndGetId(tenant)
+        tenantId = int(id)
+        return
+}</span>
+
+func (*TenantLogic) Del(ctx context.Context, id int) (err error) <span class="cov0" title="0">{
+        _, err = dao.Tenant.Ctx(ctx).Delete("id = ?", id)
+        return
+}</span>
+
+func (*TenantLogic) Update(ctx context.Context, tenant do.Tenant) (err error) <span class="cov0" title="0">{
+        tenant.UpdateAt = gtime.Now()
+        _, err = dao.Tenant.Ctx(ctx).Update(tenant, "id = ?", tenant.Id)
+        return
+}</span>
+
+func SetCurrentTenantId(ctx context.Context, tenantId *interface{}) (err error) <span class="cov8" title="1">{
+        id, ok := ctx.Value(consts.TenantIDKey).(int)
+        if !ok </span><span class="cov8" title="1">{
+                err = gerror.NewCode(gcode.New(1, "系统异常，没有找到租户信息", ""))
+                return
+        }</span>
+        <span class="cov8" title="1">*tenantId = id
+        return</span>
+}
+
+func (*TenantLogic) GetTenant(ctx context.Context, tenantId int) (tenant entity.Tenant, err error) <span class="cov0" title="0">{
+        record, err := dao.Tenant.Ctx(ctx).Where("id", tenantId).One()
+        if err != nil </span><span class="cov0" title="0">{
+                err = gerror.WrapCode(gcode.New(1, "系统异常，获取租户信息失败", ""), err)
+                return
+        }</span>
+        <span class="cov0" title="0">if record.IsEmpty() </span><span class="cov0" title="0">{
+                err = gerror.NewCode(gcode.New(404, "未找到该租户信息，请重新登录", ""))
+                return
+        }</span>
+        <span class="cov0" title="0">record.Struct(&amp;tenant)
+        return</span>
+}
+</pre>
+		
+		<pre class="file" id="file21" style="display: none">package logic
+
+import (
+        "context"
+        "errors"
+        "fmt"
+        "log"
+        "login-demo/internal/consts"
+        "login-demo/internal/dao"
+        "login-demo/internal/model"
+        "login-demo/internal/model/do"
+        "login-demo/internal/model/entity"
+        "login-demo/internal/packed/jwt"
+
+        "crypto/sha256"
+
+        "github.com/fatih/color"
+        "github.com/gogf/gf/v2/database/gdb"
+        "github.com/gogf/gf/v2/errors/gcode"
+        "github.com/gogf/gf/v2/errors/gerror"
+        "github.com/gogf/gf/v2/frame/g"
+        "github.com/gogf/gf/v2/os/gtime"
+)
+
+type LogicUser struct {
+}
+
+var (
+        User = LogicUser{}
+)
+
+// Login 登录
+func (lu *LogicUser) Login(ctx context.Context, username string, password string) (role string, token string, err error) <span class="cov0" title="0">{
+        // 计算密码哈希值
+        passwordHash := fmt.Sprintf("%x", sha256.Sum256([]byte(password)))
+        // 查询用户信息
+        user, err := dao.User.Ctx(ctx).One("passport=? and password=?", username, passwordHash)
+        switch </span>{
+        case err != nil:<span class="cov0" title="0">
+                return "", "", err</span>
+        case user == nil:<span class="cov0" title="0">
+                return "", "", errors.New("账户或密码错误")</span>
+        default:<span class="cov0" title="0">
+                // 生成 jwt token
+                token, err = jwt.GenerateToken(ctx, username)
+                if err != nil </span><span class="cov0" title="0">{
+                        return "", "", err
+                }</span>
+                // todo: 暂时没有 role
+                <span class="cov0" title="0">return "", token, nil</span>
+        }
+}
+
+type AdminInfo struct {
+        Username string `json:"username"`
+        Password string `json:"password"`
+}
+
+// InitAdmin 初始化管理员账户，从配置文件中
+func (*LogicUser) InitAdmin(ctx context.Context) <span class="cov0" title="0">{
+        admin := &amp;AdminInfo{}
+        ctx = context.WithValue(ctx, consts.TenantIDKey, consts.DefaultTenantValue)
+        err := g.Cfg().MustGet(ctx, "admin").Scan(admin)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Fatal("读取admin配置失败")
+                return
+        }</span>
+        <span class="cov0" title="0">var user *entity.User
+        err = dao.User.Ctx(ctx).Where(do.User{
+                Passport: admin.Username,
+        }).Scan(&amp;user)
+        if err != nil </span><span class="cov0" title="0">{
+                g.Log().Infof(ctx, color.RedString("err=%v, dao.User=%v"), err, user)
+                panic("查询用户表失败，是否没有连接正确的数据库")</span>
+        }
+        <span class="cov0" title="0">if user == nil </span><span class="cov0" title="0">{
+                dao.User.Ctx(ctx).Insert(do.User{
+                        Passport: admin.Username,
+                        Password: fmt.Sprintf("%x", sha256.Sum256([]byte(admin.Password))),
+                        Nickname: admin.Username,
+                        TenantId: consts.DefaultTenantValue,
+                })
+        }</span>
+}
+
+func (*LogicUser) UserList(ctx context.Context, username string, page model.PageReq) (users []model.UserMore, count int, err error) <span class="cov8" title="1">{
+        err = dao.User.Ctx(ctx).LeftJoin("user_wallet", "user.id = user_wallet.user_id").LeftJoin("wx_user", "user.id = wx_user.user_id").LeftJoin("role", "user.role_id = role.id").Fields("user.*, user_wallet.balance, wx_user.avatar_url, role.name as role_name").WhereLike("user.passport", fmt.Sprintf("%%%s%%", username)).OrderDesc("user.update_at").Page(page.PageNo, page.PageSize).ScanAndCount(&amp;users, &amp;count, false)
+        return
+}</span>
+
+func (*LogicUser) UserCount(ctx context.Context, queryUser do.User) (count int, err error) <span class="cov0" title="0">{
+        userModel := dao.User.Ctx(ctx)
+        if queryUser.Nickname != nil </span><span class="cov0" title="0">{
+                userModel = userModel.WhereLike("passport", fmt.Sprintf("%%%s%%", queryUser.Passport.(string)))
+        }</span>
+        <span class="cov0" title="0">if queryUser.RoleId != nil </span><span class="cov0" title="0">{
+                userModel = userModel.Where("role_id", queryUser.RoleId.(int))
+        }</span>
+        <span class="cov0" title="0">count, err = userModel.Count()
+        return</span>
+}
+
+func (*LogicUser) Add(ctx context.Context, user *do.User) (err error) <span class="cov8" title="1">{
+        // 计算密码哈希值
+        passwordHash := fmt.Sprintf("%x", sha256.Sum256([]byte(user.Password.(string))))
+        user.CreateAt, user.UpdateAt, user.Password = gtime.Now(), gtime.Now(), passwordHash
+        id, err := dao.User.Ctx(ctx).InsertAndGetId(user)
+        user.Id = id
+        return
+}</span>
+
+func (l *LogicUser) AddAndWallet(ctx context.Context, user *do.User) (err error) <span class="cov0" title="0">{
+        err = g.DB().Transaction(ctx, func(ctx context.Context, tx gdb.TX) error </span><span class="cov0" title="0">{
+                err = l.Add(ctx, user)
+                if err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+                <span class="cov0" title="0">_, err = dao.UserWallet.Ctx(ctx).Insert(do.UserWallet{
+                        UserId:   user.Id,
+                        Balance:  0,
+                        TenantId: user.TenantId,
+                        CreateAt: gtime.Now(),
+                        UpdateAt: gtime.Now(),
+                })
+                return err</span>
+        })
+        <span class="cov0" title="0">return</span>
+}
+
+func (*LogicUser) Del(ctx context.Context, id int) (err error) <span class="cov0" title="0">{
+        rs, err := dao.User.Ctx(ctx).Delete("id = ?", id)
+        if err != nil </span><span class="cov0" title="0">{
+                return gerror.WrapCode(gcode.New(1, "系统异常，删除失败", ""), err)
+        }</span>
+        <span class="cov0" title="0">rowsAffected, err := rs.RowsAffected()
+        if err != nil </span><span class="cov0" title="0">{
+                return gerror.WrapCode(gcode.New(1, "系统异常，删除失败", ""), err)
+        }</span>
+        <span class="cov0" title="0">if rowsAffected == 0 </span><span class="cov0" title="0">{
+                err = gerror.NewCode(gcode.New(1, "删除失败，未找到原数据，可能已被其他人删除", ""))
+                return err
+        }</span>
+        <span class="cov0" title="0">return</span>
+}
+
+func (*LogicUser) Update(ctx context.Context, user do.User) (err error) <span class="cov0" title="0">{
+        // 计算密码哈希值
+        passwordHash := fmt.Sprintf("%x", sha256.Sum256([]byte(user.Password.(string))))
+        user.UpdateAt, user.Password = gtime.Now(), passwordHash
+        rs, err := dao.User.Ctx(ctx).Update(user, "id = ?", user.Id)
+        if err != nil </span><span class="cov0" title="0">{
+                return gerror.WrapCode(gcode.New(1, "系统异常，修改失败", ""), err)
+        }</span>
+        <span class="cov0" title="0">rowsAffected, err := rs.RowsAffected()
+        if err != nil </span><span class="cov0" title="0">{
+                return gerror.WrapCode(gcode.New(1, "系统异常，修改失败", ""), err)
+        }</span>
+        <span class="cov0" title="0">if rowsAffected == 0 </span><span class="cov0" title="0">{
+                err = gerror.NewCode(gcode.New(1, "修改失败，未找到原数据，可能已被其他人删除", ""))
+                return err
+        }</span>
+        <span class="cov0" title="0">return</span>
+}
+
+// 设置 username 到 context 中
+func (LogicUser) SetUserContext(username string, setCtx func(interface{}, interface{})) <span class="cov0" title="0">{
+        setCtx(consts.UserContextKey, model.UserContext{
+                Username: username,
+        })
+}</span>
+
+// 从 context 取出 user 信息“
+func (l LogicUser) GetCurrentUser(ctx context.Context) (user model.UserMore, err error) <span class="cov8" title="1">{
+        userCtx, ok := ctx.Value(consts.UserContextKey).(model.UserContext)
+        if !ok </span><span class="cov0" title="0">{
+                err = gerror.NewCode(gcode.New(404, "未找到登录用户信息", ""))
+                return
+        }</span>
+        <span class="cov8" title="1">users, count, err := User.UserList(ctx, userCtx.Username, model.PageReq{})
+        if err != nil </span><span class="cov0" title="0">{
+                return
+        }</span>
+        <span class="cov8" title="1">if count != 1 </span><span class="cov0" title="0">{
+                err = gerror.NewCode(gcode.New(404, fmt.Sprintf("%s 用户不存在，请重新注册", userCtx.Username), ""))
+                return
+        }</span>
+        <span class="cov8" title="1">user = users[0]
+        return</span>
+}
+</pre>
+		
+		<pre class="file" id="file22" style="display: none">package logic
+
+import (
+        "context"
+        "database/sql"
+        "fmt"
+        "login-demo/internal/dao"
+        "login-demo/internal/model"
+        "login-demo/internal/model/do"
+        "login-demo/internal/model/entity"
+        "math/rand"
+        "time"
+
+        "github.com/gogf/gf/v2/errors/gcode"
+        "github.com/gogf/gf/v2/errors/gerror"
+        "github.com/gogf/gf/v2/os/gtime"
+)
+
+// 用户充值相关
+var UserPay UserPayLogic
+
+type UserPayLogic struct {
+}
+
+func (*UserPayLogic) UserPayList(ctx context.Context, page model.PageReq) (userPays []model.PayRecordInfo, count int, err error) <span class="cov0" title="0">{
+        err = dao.PayRecord.Ctx(ctx).LeftJoin("user", "user.id=pay_record.user_id").Page(page.PageNo, page.PageSize).Fields("pay_record.*, user.passport as username").OrderDesc("pay_record.update_at").ScanAndCount(&amp;userPays, &amp;count, false)
+        return
+}</span>
+
+func (*UserPayLogic) UserPay(ctx context.Context, userPay do.PayRecord) (err error) <span class="cov0" title="0">{
+        tx, err := dao.ChargeOrder.DB().Begin(ctx)
+        if err != nil </span><span class="cov0" title="0">{
+                return
+        }</span>
+        <span class="cov0" title="0">count, err := dao.User.Ctx(ctx).Where("id=?", userPay.UserId).Count()
+        if count == 0 </span><span class="cov0" title="0">{
+                err = gerror.NewCode(gcode.New(404, "用户不存在", "用户不存在"))
+                return
+        }</span>
+        <span class="cov0" title="0">if err != nil </span><span class="cov0" title="0">{
+                return
+        }</span>
+        <span class="cov0" title="0">userWalletExist := new(entity.UserWallet)
+        err = dao.UserWallet.Ctx(ctx).Where("user_id=?", userPay.UserId).Scan(userWalletExist)
+        if err == sql.ErrNoRows </span><span class="cov0" title="0">{
+                err = gerror.NewCode(gcode.New(1, "系统异常，未找到钱包信息", ""))
+                return
+        }</span> else<span class="cov0" title="0"> {
+                fmt.Printf("userPay.Price:%T, userWalletExist.Balance:%T\n", userPay.Price, userWalletExist.Balance)
+                userWallet := do.UserWallet{
+                        UserId:   userWalletExist.UserId,
+                        Balance:  userWalletExist.Balance + userPay.Price.(float64),
+                        UpdateAt: gtime.Now(),
+                }
+                _, err = dao.UserWallet.Ctx(ctx).Update(userWallet, "user_id", userWalletExist.UserId)
+        }</span>
+        <span class="cov0" title="0">if err != nil </span><span class="cov0" title="0">{
+                return
+        }</span>
+        <span class="cov0" title="0">rand.Seed(time.Now().UnixNano())
+        userPay.State, userPay.CreateAt, userPay.UpdateAt = 1, gtime.Now(), gtime.Now()
+        userPay.PayAt = gtime.Now()
+        userPay.PayCode = fmt.Sprintf("%s-%d", time.Now().Format("200601021504"), rand.Intn(10000))
+        if err != nil </span><span class="cov0" title="0">{
+                userPay.State = 2
+        }</span>
+        <span class="cov0" title="0">err = SetCurrentTenantId(ctx, &amp;userPay.TenantId)
+        if err != nil </span><span class="cov0" title="0">{
+                return
+        }</span>
+        <span class="cov0" title="0">_, err = dao.PayRecord.Ctx(ctx).Insert(userPay)
+        tx.Commit()
+        return</span>
+}
+</pre>
+		
+		<pre class="file" id="file23" style="display: none">package logic
+
+import (
+        "context"
+        "encoding/json"
+        "errors"
+        "fmt"
+        "login-demo/internal/consts"
+        "login-demo/internal/dao"
+        "login-demo/internal/model/do"
+        "login-demo/internal/packed/jwt"
+        "net/http"
+
+        "github.com/gogf/gf/v2/database/gdb"
+        "github.com/gogf/gf/v2/errors/gcode"
+        "github.com/gogf/gf/v2/errors/gerror"
+        "github.com/gogf/gf/v2/frame/g"
+        "github.com/gogf/gf/v2/net/gclient"
+        "github.com/gogf/gf/v2/os/glog"
+        "github.com/gogf/gf/v2/os/gtime"
+)
+
+type WxLoginLogic struct{}
+
+var WxLogin WxLoginLogic
+
+var WxCache map[string]WechatLoginResponse = make(map[string]WechatLoginResponse)
+
+var WxValidcode map[string]string = map[string]string{}
+
+// 微信相关操作
+func (*WxLoginLogic) WechatLogin(ctx context.Context, code string) (*WechatLoginResponse, error) <span class="cov0" title="0">{
+        value, ok := WxCache[code]
+        if !ok </span><span class="cov0" title="0">{
+                url := fmt.Sprintf("https://api.weixin.qq.com/sns/jscode2session?appid=%s&amp;secret=%s&amp;js_code=%s&amp;grant_type=authorization_code", g.Cfg().MustGet(ctx, "wechat.appId"), g.Cfg().MustGet(ctx, "wechat.appSecret"), code)
+                client := &amp;http.Client{}
+                wxreq, err := http.NewRequest("GET", url, nil)
+                if err != nil </span><span class="cov0" title="0">{
+                        glog.Error(ctx, err)
+                        return nil, gerror.NewCode(gcode.New(403, "微信登录失败", err.Error()))
+                }</span>
+                <span class="cov0" title="0">wxreq.Header.Set("Content-Type", "application/json")
+                resp, err := client.Do(wxreq)
+                if err != nil </span><span class="cov0" title="0">{
+                        glog.Error(ctx, err)
+                        return nil, gerror.NewCode(gcode.New(403, "微信登录失败", err.Error()))
+                }</span>
+                <span class="cov0" title="0">defer resp.Body.Close()
+
+                var data WechatLoginResponse
+                err = json.NewDecoder(resp.Body).Decode(&amp;data)
+                if err != nil </span><span class="cov0" title="0">{
+                        return nil, gerror.NewCode(gcode.New(1, "微信登录失败", "解析微信登录信息失败"))
+                }</span>
+                <span class="cov0" title="0">if data.ErrCode != 0 </span><span class="cov0" title="0">{
+                        glog.Info(ctx, data)
+                        glog.Error(ctx, data.ErrMsg)
+                        return nil, gerror.NewCode(gcode.New(1, "微信登录失败", data.ErrMsg))
+                }</span>
+                <span class="cov0" title="0">WxCache[code] = data
+                return &amp;data, nil</span>
+        } else<span class="cov0" title="0"> {
+                return &amp;value, nil
+        }</span>
+
+}
+
+type WechatLoginResponse struct {
+        OpenID     string `json:"openid"`
+        SessionKey string `json:"session_key"`
+        UnionID    string `json:"unionid"`
+        ErrCode    int    `json:"errcode"`
+        ErrMsg     string `json:"errmsg"`
+}
+
+type WechatPhoneNumber struct {
+        ErrCode   int    `json:"errcode"`
+        ErrMsg    string `json:"errmsg"`
+        PhoneInfo struct {
+                PhoneNumber     string `json:"phoneNumber"`
+                PurePhoneNumber string `json:"purePhoneNumber"`
+                CountryCode     string `json:"countryCode"`
+                Watermark       struct {
+                        Timestamp int64  `json:"timestamp"`
+                        AppID     string `json:"appid"`
+                } `json:"watermark"`
+        } `json:"phone_info"`
+}
+
+type AccessToken struct {
+        AccessToken string `json:"access_token"`
+        ExpiresIn   int    `json:"expires_in"` // 7200 秒
+}
+
+func (*WxLoginLogic) WechatAccessToken(ctx context.Context) (string, error) <span class="cov0" title="0">{
+        url := fmt.Sprintf("https://api.weixin.qq.com/cgi-bin/token?grant_type=%s&amp;appid=%s&amp;secret=%s", "client_credential", g.Cfg().MustGet(ctx, "wechat.appId"), g.Cfg().MustGet(ctx, "wechat.appSecret"))
+        // 创建 HTTP 客户端
+        client := gclient.New()
+
+        // 发送 GET 请求
+        resp, err := client.Get(ctx, url)
+        if err != nil </span><span class="cov0" title="0">{
+                panic(err)</span>
+        }
+        <span class="cov0" title="0">defer resp.Close()
+
+        var accessToken AccessToken
+        err = json.NewDecoder(resp.Body).Decode(&amp;accessToken)
+        return accessToken.AccessToken, err</span>
+
+}
+
+// 废弃
+func (*WxLoginLogic) WechatPhone(ctx context.Context, code string, encryptedData string, iv string) (*WechatPhoneNumber, error) <span class="cov0" title="0">{
+        accessToken, err := WxLogin.WechatAccessToken(ctx)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, gerror.NewCode(gcode.New(1, "获取 accessToken", err.Error()))
+        }</span>
+        <span class="cov0" title="0">url := fmt.Sprintf("https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=%s", accessToken)
+
+        // 创建 HTTP 客户端
+        client := gclient.New()
+        data := map[string]string{}
+        data["code"] = code
+        // 发送 GET 请求
+        resp, err := client.Post(ctx, url, data)
+        if err != nil </span><span class="cov0" title="0">{
+                panic(err)</span>
+        }
+        <span class="cov0" title="0">defer resp.Close()
+        var phoneNumber WechatPhoneNumber
+        err = json.NewDecoder(resp.Body).Decode(&amp;phoneNumber)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, gerror.NewCode(gcode.New(1, "解析手机号失败", err.Error()))
+        }</span>
+        <span class="cov0" title="0">if phoneNumber.ErrCode != 0 </span><span class="cov0" title="0">{
+                return nil, gerror.NewCode(gcode.New(phoneNumber.ErrCode, "获取手机号失败", phoneNumber.ErrMsg))
+        }</span>
+        <span class="cov0" title="0">if err != nil </span><span class="cov0" title="0">{
+                panic(err)</span>
+        }
+        <span class="cov0" title="0">return &amp;phoneNumber, err</span>
+}
+
+func (*WxLoginLogic) SendValidCode(ctx context.Context, phone string) error <span class="cov0" title="0">{
+        WxValidcode[phone] = "666666"
+        return nil
+}</span>
+
+// WxRegisterService 是注册相关的 service
+type WxRegisterService struct {
+}
+
+var WxRegister WxRegisterService
+
+func (s *WxRegisterService) VerifyCode(ctx context.Context, phone, validcode string) (err error) <span class="cov0" title="0">{
+        validCode, ok := WxValidcode[phone]
+        if ok </span><span class="cov0" title="0">{
+                if validCode == validcode </span><span class="cov0" title="0">{
+                        return
+                }</span>
+        }
+        <span class="cov0" title="0">return errors.New("验证码不匹配")</span>
+}
+
+// Register 用于注册新用户
+func (s *WxRegisterService) Register(ctx context.Context, phone, nickname, avatarUrl, openid, gender string) (token string, err error) <span class="cov8" title="1">{
+        err = g.DB().Transaction(ctx, func(ctx context.Context, tx gdb.TX) error </span><span class="cov8" title="1">{
+                // 添加新用户
+                user := &amp;do.User{
+                        Passport: phone,
+                        Nickname: nickname,
+                        Password: "123456",
+                        TenantId: consts.DefaultTenantValue,
+                }
+                err = User.Add(ctx, user)
+                if err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+
+                // 添加微信用户信息
+                <span class="cov8" title="1">wxuser := do.WxUser{
+                        UserId:    user.Id,
+                        OpenId:    openid,
+                        PhoneNo:   phone,
+                        AvatarUrl: avatarUrl,
+                        Nickname:  nickname,
+                        Gender:    gender,
+                        TenantId:  consts.DefaultTenantValue,
+                        UpdateAt:  gtime.New(),
+                        CreateAt:  gtime.New(),
+                }
+                _, err = dao.WxUser.Ctx(ctx).Insert(wxuser)
+                if err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+
+                // 添加钱包信息
+                <span class="cov8" title="1">addUserWallet := do.UserWallet{
+                        UserId:   user.Id,
+                        Balance:  10.0,
+                        TenantId: consts.DefaultTenantValue,
+                        UpdateAt: gtime.New(),
+                        CreateAt: gtime.New(),
+                }
+                _, err = dao.UserWallet.Ctx(ctx).Insert(addUserWallet)
+                if err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+                <span class="cov8" title="1">return nil</span>
+        })
+        <span class="cov8" title="1">if err != nil </span><span class="cov0" title="0">{
+                err = gerror.NewCode(gcode.New(1, "微信注册失败", err.Error()))
+        }</span>
+
+        // 生成 JWT token
+        <span class="cov8" title="1">token, err = jwt.GenerateToken(ctx, phone)
+        if err != nil </span><span class="cov0" title="0">{
+                return "", err
+        }</span>
+
+        <span class="cov8" title="1">return token, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file24" style="display: none">package logic
+
+import (
+        "context"
+        "login-demo/internal/dao"
+        "login-demo/internal/model/entity"
+)
+
+type WxUserLogic struct{}
+
+var WxUser WxUserLogic
+
+func (*WxUserLogic) GetUserByOpenID(ctx context.Context, openID string) (*entity.User, error) <span class="cov0" title="0">{
+        var user entity.User
+        err := dao.WxUser.Ctx(ctx).InnerJoin("user", "user.id=wx_user.user_id").Fields("user.*").Where("open_id=?", openID).Scan(&amp;user)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov0" title="0">return &amp;user, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file25" style="display: none">package geo
+
+import (
+        "math"
+        "strconv"
+        "strings"
+)
+
+// 地理位置相关的功能工具文件
+
+// GetDistance 计算两个经纬度之间的直线距离，单位为千米
+// 例子：
+// distance := GetDistance(location1, location2)
+// fmt.Printf("两地之间的直线距离为：%.2f千米\n", distance)
+func GetDistance(location1, location2 string) (distance float64) <span class="cov8" title="1">{
+        // 将经纬度字符串转换为浮点数
+        loc1 := strings.Split(location1, ",")
+        lat1 := toFloat(loc1[0])
+        lng1 := toFloat(loc1[1])
+
+        loc2 := strings.Split(location2, ",")
+        lat2 := toFloat(loc2[0])
+        lng2 := toFloat(loc2[1])
+
+        // 计算两地之间的直线距离
+        R := 6371.0 // 地球半径，单位为千米
+        dLat := (lat2 - lat1) * math.Pi / 180.0
+        dLon := (lng2 - lng1) * math.Pi / 180.0
+        a := math.Sin(dLat/2)*math.Sin(dLat/2) +
+                math.Cos(lat1*math.Pi/180.0)*math.Cos(lat2*math.Pi/180.0)*
+                        math.Sin(dLon/2)*math.Sin(dLon/2)
+        c := 2 * math.Atan2(math.Sqrt(a), math.Sqrt(1-a))
+        distance = R * c // 两地之间的直线距离，单位为千米
+
+        return
+}</span>
+
+// toFloat 将字符串转换为浮点数
+func toFloat(str string) float64 <span class="cov8" title="1">{
+        f, _ := strconv.ParseFloat(str, 64)
+        return f
+}</span>
+</pre>
+		
+		<pre class="file" id="file26" style="display: none">package jwt
+
+import (
+        "context"
+        "time"
+
+        "github.com/gogf/gf/v2/frame/g"
+        "github.com/golang-jwt/jwt"
+)
+
+var (
+        JwtSecret   = []byte("123456")
+        ExpiresTime = time.Minute * 1 // 默认1分钟
+)
+
+func init() <span class="cov8" title="1">{
+        val, _ := g.Cfg().Get(context.Background(), "tokenAliveTime")
+        tokenAlive := val.Int()
+        ExpiresTime = time.Minute * time.Duration(tokenAlive)
+}</span>
+
+type UserClaims struct {
+        Username string `json:"username"`
+        jwt.StandardClaims
+}
+
+// GenerateToken 生成 jwt 格式 token
+func GenerateToken(ctx context.Context, username string) (token string, err error) <span class="cov8" title="1">{
+        tokenHeader := jwt.NewWithClaims(jwt.SigningMethodHS256, &amp;UserClaims{
+                Username: username,
+                StandardClaims: jwt.StandardClaims{
+                        ExpiresAt: time.Now().Add(ExpiresTime).Unix(),
+                },
+        })
+        token, err = tokenHeader.SignedString(JwtSecret)
+        return
+}</span>
+
+// Valid 验证 token 是否合法
+func Valid(ctx context.Context, token string) (valid bool) <span class="cov8" title="1">{
+        var claims *UserClaims = &amp;UserClaims{}
+        tkn, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) </span><span class="cov8" title="1">{
+                return JwtSecret, nil
+        }</span>)
+        <span class="cov8" title="1">valid = (err == nil) &amp;&amp; tkn.Valid
+        return</span>
+}
+
+// 解析 token 内容
+func Parse(ctx context.Context, token string) (claims *UserClaims, err error) <span class="cov8" title="1">{
+        claims = &amp;UserClaims{}
+        _, err = jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) </span><span class="cov8" title="1">{
+                return JwtSecret, nil
+        }</span>)
+        <span class="cov8" title="1">return</span>
+}
+</pre>
+		
+		<pre class="file" id="file27" style="display: none">package sql
+
+import (
+        "fmt"
+        "strings"
+)
+
+// SQLParser 结构体用于解析和修改 SQL 语句
+type SQLParser struct {
+        sql  string
+        args []interface{}
+}
+
+// NewSQLParser 创建一个新的 SQLParser 实例
+func NewSQLParser(sql string, args []interface{}) *SQLParser <span class="cov8" title="1">{
+        return &amp;SQLParser{
+                sql:  sql,
+                args: args,
+        }
+}</span>
+
+var SqlTokens = []string{"group", "order", "limit"}
+
+// AddWhere 方法用于向 SQL 语句中添加 WHERE 条件
+// 它接受一个条件和一个值，然后将它们插入到 SQL 语句的适当位置
+//
+// 示例：
+// parser := NewSQLParser("select * from user join order on user.id = order.user_id", nil)
+// parser.AddWhere("tenant_id", 1)
+func (p *SQLParser) AddWhere(condition string, value interface{}) *SQLParser <span class="cov8" title="1">{
+        whereSQL := fmt.Sprintf("%s=?", condition)
+        lowerSQL := strings.ToLower(p.sql)
+        index := -1
+        if strings.Contains(lowerSQL, "where") </span><span class="cov8" title="1">{
+                whereSQL = fmt.Sprintf(" %s and", whereSQL)
+                index = strings.Index(lowerSQL, " where ") + len(" where")
+
+        }</span> else<span class="cov8" title="1"> if strings.Contains(lowerSQL, " group ") || strings.Contains(lowerSQL, " order ") || strings.Contains(lowerSQL, " limit ") </span><span class="cov8" title="1">{
+                whereSQL = fmt.Sprintf(" where %s", whereSQL)
+                groupIndex := strings.Index(lowerSQL, " group ")
+                orderIndex := strings.Index(lowerSQL, " order ")
+                limitIndex := strings.Index(lowerSQL, " limit ")
+                index = groupIndex
+                if orderIndex != -1 &amp;&amp; (index == -1 || index &gt; orderIndex) </span><span class="cov8" title="1">{
+                        index = orderIndex
+                }</span>
+                <span class="cov8" title="1">if limitIndex != -1 &amp;&amp; (index == -1 || index &gt; limitIndex) </span><span class="cov0" title="0">{
+                        index = limitIndex
+                }</span>
+        } else<span class="cov8" title="1"> {
+                whereSQL = fmt.Sprintf(" where %s", whereSQL)
+                index = len(p.sql)
+        }</span>
+        <span class="cov8" title="1">p.sql = p.insertCondition(lowerSQL, whereSQL, index)
+
+        newArgs := make([]interface{}, len(p.args)+1)
+        newArgs[0] = value
+        copy(newArgs[1:], p.args)
+        p.args = newArgs
+        return p</span>
+}
+
+// insertCondition 方法用于在 SQL 语句的下标后面插入条件
+// 它接受一个 SQL 语句、一个条件和一个关键字，然后返回修改后的 SQL 语句
+//
+// 示例：
+// p.sql = p.insertCondition(lowerSQL, whereSQL, 10)
+func (p *SQLParser) insertCondition(lowerSQL, condition string, index int) string <span class="cov8" title="1">{
+        // index := strings.Index(lowerSQL, keyword)
+        preSQL := p.sql[:index]
+        afterSQL := p.sql[index:]
+        return preSQL + condition + afterSQL
+}</span>
+
+// GetSQL 方法返回当前的 SQL 语句
+//
+// 示例：
+// fmt.Println(parser.GetSQL())
+func (p *SQLParser) GetSQL() string <span class="cov8" title="1">{
+        return p.sql
+}</span>
+
+// GetArgs 方法返回当前的参数列表
+//
+// 示例：
+// fmt.Println(parser.GetArgs())
+func (p *SQLParser) GetArgs() []interface{} <span class="cov8" title="1">{
+        return p.args
+}</span>
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>
