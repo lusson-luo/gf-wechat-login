@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/net/ghttp"
 )
 
 type StationListReq struct {
@@ -21,6 +22,7 @@ type StationListRes struct {
 	Address    string    `json:"address"`
 	TenantName string    `json:"tenantName"`
 	Coordinate string    `json:"coordinate" `  //
+	ImageUrl   string    `json:"imageUrl"   `  //
 	CreateAt   time.Time `json:"createAt"    ` //
 	UpdateAt   time.Time `json:"updateAt"    ` //
 }
@@ -30,6 +32,7 @@ type StationAddReq struct {
 	Name       string `json:"name"`
 	Address    string `json:"address"`
 	Coordinate string `json:"coordinate" ` //
+	ImageUrl   string `json:"imageUrl"   ` //
 }
 
 type StationAddRes struct {
@@ -51,8 +54,20 @@ type StationUpdateReq struct {
 	Name       string `json:"name"`
 	Address    string `json:"address"`
 	Coordinate string `json:"coordinate" ` //
+	ImageUrl   string `json:"imageUrl"   ` //
 }
 
 type StationUpdateRes struct {
 	g.Meta `mime:"application/json" `
+}
+
+type StationUploadReq struct {
+	g.Meta `path:"station/upload" tags:"充电站管理" method:"post" summary:"图片上传"`
+	File   *ghttp.UploadFile `json:"file" type:"json" dc:"选择上传文件"`
+}
+
+type StationUploadRes struct {
+	g.Meta `mime:"application/json" `
+	Name   string `json:"name" dc:"文件名称"`
+	Url    string `json:"url" dc:"访问URL"`
 }

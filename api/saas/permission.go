@@ -9,7 +9,11 @@ type PermissionListReq struct {
 }
 
 type PermissionListRes struct {
-	g.Meta         `mime:"application/json" example:"string"`
+	g.Meta `mime:"application/json" example:"string"`
+	Data   []PermissionList `json:"data"`
+}
+
+type PermissionList struct {
 	Model          string       `json:"model"`
 	PermissionList []Permission `json:"permissionList"`
 }

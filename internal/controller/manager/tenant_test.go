@@ -28,9 +28,9 @@ func TestTenantSelectList(t *testing.T) {
 	defer DropAllTableWithDb()
 	gtest.C(t, func(t *gtest.T) {
 		selects, err := controller.TenantController{}.SelectList(ctx, &v2.TenantSelectListReq{})
-		t.Assert(2, len(selects))
+		t.Assert(2, len(selects.Data))
 		t.AssertNil(err)
-		t.Assert(selects[0].Name, "土拨鼠充电公司")
+		t.Assert(selects.Data[0].Name, "土拨鼠充电公司")
 	})
 }
 

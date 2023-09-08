@@ -74,7 +74,7 @@ func TestUserDel(t *testing.T) {
 		_, err := controller.UserController{}.Del(tenantCtx, &v2.UserDelReq{
 			Id: 10,
 		})
-		t.AssertNNil(err)
+		t.AssertNE(err, nil)
 	})
 }
 
@@ -97,6 +97,6 @@ func TestUserUpdate(t *testing.T) {
 			Id:       10,
 			Username: "admin@qq.com",
 		})
-		t.AssertNNil(err)
+		t.AssertNE(err, nil)
 	})
 }

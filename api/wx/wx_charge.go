@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/net/ghttp"
 )
 
 // 微信小程序充电接口
@@ -95,6 +96,7 @@ type WxStationListRes struct {
 	FreePileTotal int       `json:"freePileTotal" `
 	PricePerHour  float64   `json:"pricePerHour" `
 	Distance      float64   `json:"distance" `
+	ImageUrl      string    `json:"imageUrl"`     //
 	CreateAt      time.Time `json:"createAt"    ` //
 	UpdateAt      time.Time `json:"updateAt"    ` //
 }
@@ -144,4 +146,26 @@ type WXPriceListRes struct {
 	TenantId  int       `json:"tenantId"     ` //
 	CreateAt  time.Time `json:"createAt"  `    //
 	UpdateAt  time.Time `json:"updateAt"  `    //
+}
+
+// 上传个人头像
+type WXUploadAvatarReq struct {
+	g.Meta `path:"/wx-api/upload/avatar" tags:"微信小程序业务接口" method:"post" summary:"上传个人头像"`
+	File   *ghttp.UploadFile `json:"file" type:"json" dc:"选择上传文件"`
+}
+
+type WXUploadAvatarRes struct {
+	g.Meta `mime:"application/json" example:"string"`
+	Url    string `json:"url"  ` //
+}
+
+// 修改个人昵称
+type WXUpdateNicknameReq struct {
+	g.Meta      `path:"/wx-api/update/nickname" tags:"微信小程序业务接口" method:"post" summary:"修改个人昵称"`
+	NewNickname string `json:"newNickname"`
+}
+
+type WXUpdateNicknameRes struct {
+	g.Meta `mime:"application/json" example:"string"`
+	Url    string `json:"url"  ` //
 }

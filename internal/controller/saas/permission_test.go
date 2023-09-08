@@ -11,6 +11,7 @@ import (
 	"github.com/gogf/gf/v2/test/gtest"
 )
 
+// todo: 改造saas后，该单元测试存在问题
 func TestPermissionList(t *testing.T) {
 	CreateTableFromSql()
 	defer DropAllTableWithDb()
@@ -19,14 +20,14 @@ func TestPermissionList(t *testing.T) {
 		ctx = context.WithValue(ctx, consts.TenantIDKey, 1)
 		res, err := controller.PermissionController{}.List(ctx, &v2.PermissionListReq{})
 		t.AssertNil(err)
-		t.Assert(len(res), 11)
+		t.Assert(len(res.Data), 11)
 	})
 	// tenant == 2
 	gtest.C(t, func(t *gtest.T) {
 		ctx = context.WithValue(ctx, consts.TenantIDKey, 2)
 		res, err := controller.PermissionController{}.List(ctx, &v2.PermissionListReq{})
 		t.AssertNil(err)
-		t.Assert(len(res), 10)
+		t.Assert(len(res.Data), 10)
 	})
 }
 

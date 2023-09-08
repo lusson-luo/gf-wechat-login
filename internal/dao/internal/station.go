@@ -24,6 +24,7 @@ type StationColumns struct {
 	TenantId   string //
 	Name       string //
 	Address    string //
+	ImageUrl   string //
 	Coordinate string //
 	CreateAt   string //
 	UpdateAt   string //
@@ -35,6 +36,7 @@ var stationColumns = StationColumns{
 	TenantId:   "tenant_id",
 	Name:       "name",
 	Address:    "address",
+	ImageUrl:   "image_url",
 	Coordinate: "coordinate",
 	CreateAt:   "create_at",
 	UpdateAt:   "update_at",

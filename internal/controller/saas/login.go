@@ -6,8 +6,6 @@ import (
 	"login-demo/internal/logic"
 	"login-demo/internal/packed/jwt"
 
-	"github.com/gogf/gf/v2/errors/gcode"
-	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/mojocn/base64Captcha"
 )
 
@@ -43,27 +41,20 @@ func (C Login) Refresh(ctx context.Context, req *v2.RefreshReq) (res *v2.Refresh
 	return
 }
 
-func (C Login) GetCaptcha(ctx context.Context, req *v2.GetCaptchaReq) (res *v2.GetCaptchaRes, err error) {
+// func (C Login) GetCaptcha(ctx context.Context, req *v2.GetCaptchaReq) (res *v2.GetCaptchaRes, err error) {
 
-	id, b64s, err := captcha.Generate()
-	if err != nil {
-		err = gerror.NewCode(gcode.New(code, message, detail))
-	}
-	res = &v2.GetCaptchaRes{
-		CaptchaId:   id,
-		CaptchaBody: b64s,
-	}
-	return
-}
+// 	id, b64s, err := captcha.Generate()
+// 	if err != nil {
+// 		// err = gerror.NewCode(gcode.New(code, message, detail))
+// 	}
+// 	res = &v2.GetCaptchaRes{
+// 		CaptchaId:   id,
+// 		CaptchaBody: b64s,
+// 	}
+// 	return
+// }
 
-func (C Login) ValidCaptcha(ctx context.Context, req *v2.ValidCaptchaReq) (res *v2.ValidCaptchaRes, err error) {
-	user, err := logic.User.GetCurrentUser(ctx)
-	if err != nil {
-		return
-	}
-	newToken, err := jwt.GenerateToken(ctx, user.Passport)
-	res = &v2.RefreshRes{
-		Token: newToken,
-	}
-	return
-}
+// func (C Login) ValidCaptcha(ctx context.Context, req *v2.ValidCaptchaReq) (res *v2.ValidCaptchaRes, err error) {
+// 	res = &v2.ValidCaptchaRes{}
+// 	return
+// }

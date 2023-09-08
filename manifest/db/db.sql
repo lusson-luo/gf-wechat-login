@@ -45,8 +45,8 @@ CREATE TABLE IF NOT EXISTS role_permission(
 REPLACE INTO role_permission
 (role_id, tenant_id, permissions, create_at, update_at) 
 VALUES 
-(1,1, 'ChargeStationView,ChargeStationAdd,ChargeStationUpdate,ChargeStationDel,ChargePileView,ChargePileAdd,ChargePileUpdate,ChargePileDel,TenantView,TenantAdd,TenantUpdate,TenantDel,PriceView,PriceAdd,PriceDel,PriceUpdate,ChargeOrderView,AddPrice,AtuditLogView,PermissionView,PermissionViewBind,RoleView,RoleAdd,RoleDel,RoleUpdate,UserView,UserAdd,UserDel,UserUpdate', datetime('now'), datetime('now')),
-(2,1, 'ChargeStationView,ChargeStationAdd,ChargeStationUpdate,ChargeStationDel,ChargePileView,ChargePileAdd,ChargePileUpdate,ChargePileDel,PriceView,PriceAdd,PriceDel,PriceUpdate,ChargeOrderView,AddPrice,AtuditLogView,PermissionView,PermissionViewBind,RoleView,RoleAdd,RoleDel,RoleUpdate,UserView,UserAdd,UserDel,UserUpdate', datetime('now'), datetime('now'));
+(1,1, 'ChargeStationView,ChargeStationAdd,ChargeStationUpdate,ChargeStationDel,ChargePileView,ChargePileAdd,ChargePileUpdate,ChargePileDel,TenantView,TenantAdd,TenantUpdate,TenantDel,PriceView,PriceAdd,PriceDel,PriceUpdate,ChargeOrderView,AddPrice,AtuditLogView,PermissionView,PermissionViewBind,RoleView,RoleAdd,RoleDel,RoleUpdate,UserView,UserAdd,UserDel,UserUpdate,ScreenView', datetime('now'), datetime('now')),
+(2,1, 'ChargeStationView,ChargeStationAdd,ChargeStationUpdate,ChargeStationDel,ChargePileView,ChargePileAdd,ChargePileUpdate,ChargePileDel,PriceView,PriceAdd,PriceDel,PriceUpdate,ChargeOrderView,AddPrice,AtuditLogView,PermissionView,PermissionViewBind,RoleView,RoleAdd,RoleDel,RoleUpdate,UserView,UserAdd,UserDel,UserUpdate,ScreenView', datetime('now'), datetime('now'));
 
 DROP TABLE IF EXISTS tenant;
 CREATE TABLE tenant (
@@ -74,15 +74,16 @@ CREATE TABLE IF NOT EXISTS station(
     tenant_id INTEGER NOT NULL, --  '租户ID'
     name  varchar(45) NOT NULL unique, --  '充电站名'
     address  varchar(45) NOT NULL, --  '充电站地址'
+    image_url varchar(255) NOT NULL, --  '充电站图片'
     coordinate  varchar(45) NOT NULL, --  '坐标，格式 x坐标,y坐标，如113.906737,22.568444'
     create_at datetime(0) DEFAULT NULL, --  'Created Time'
     update_at datetime(0) DEFAULT NULL --  'Updated Time'
 );
 
-REPLACE INTO station(id, tenant_id, name, address, coordinate, create_at, update_at) VALUES 
-(1, 1, '宝安新安充电站', '深圳市宝安区新安街道17区3号', '113.906737,22.568444', datetime('now'), datetime('now')),
-(2, 1, '宝安西乡充电站', '深圳市宝安区西乡街道盐田村5号', '113.871308,22.583729', datetime('now'), datetime('now')),
-(3, 2, '南山南头充电站', '深圳市南山南头街道5区12号', '113.931674,22.554093', datetime('now'), datetime('now'))
+REPLACE INTO station(id, tenant_id, name, address, image_url, coordinate, create_at, update_at) VALUES 
+(1, 1, '宝安新安充电站', '深圳市宝安区新安街道17区3号',"", '113.906737,22.568444', datetime('now'), datetime('now')),
+(2, 1, '宝安西乡充电站', '深圳市宝安区西乡街道盐田村5号',"", '113.871308,22.583729', datetime('now'), datetime('now')),
+(3, 2, '南山南头充电站', '深圳市南山南头街道5区12号',"", '113.931674,22.554093', datetime('now'), datetime('now'))
 ;
 
 DROP TABLE IF EXISTS pile;

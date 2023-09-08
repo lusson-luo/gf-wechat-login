@@ -28,6 +28,7 @@ func (StationController) List(ctx context.Context, req *v2.StationListReq) (page
 			Address:    station.Address,
 			Coordinate: station.Coordinate,
 			TenantName: station.TenantName,
+			ImageUrl:   station.ImageUrl,
 			CreateAt:   station.CreateAt.Time,
 			UpdateAt:   station.UpdateAt.Time,
 		}
@@ -42,6 +43,7 @@ func (StationController) Add(ctx context.Context, req *v2.StationAddReq) (res *v
 		Name:       req.Name,
 		Address:    req.Address,
 		Coordinate: req.Coordinate,
+		ImageUrl:   req.ImageUrl,
 	}
 	err = logic.Station.Add(ctx, station)
 	return
@@ -60,7 +62,20 @@ func (StationController) Update(ctx context.Context, req *v2.StationUpdateReq) (
 		Name:       req.Name,
 		Address:    req.Address,
 		Coordinate: req.Coordinate,
+		ImageUrl:   req.ImageUrl,
 	}
 	err = logic.Station.Update(ctx, station)
+	return
+}
+
+func (StationController) Upload(ctx context.Context, req *v2.StationUploadReq) (res *v2.StationUploadRes, err error) {
+	err, fileName, fileUrl := logic.File.FileUpload(ctx, req.File)
+	if err != nil {
+		return
+	}
+	res = &v2.StationUploadRes{
+		Name: fileName,
+		Url:  fileUrl,
+	}
 	return
 }

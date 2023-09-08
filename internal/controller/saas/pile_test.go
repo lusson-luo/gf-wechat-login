@@ -48,7 +48,7 @@ func TestPileAdd(t *testing.T) {
 			Code:      "288",
 			StationId: 12,
 		})
-		t.AssertNNil(err)
+		t.AssertNE(err, nil)
 	})
 }
 
@@ -74,7 +74,7 @@ func TestPileUpdate(t *testing.T) {
 			StationId: 12,
 			State:     1,
 		})
-		t.AssertNNil(err)
+		t.AssertNE(err, nil)
 	})
 }
 

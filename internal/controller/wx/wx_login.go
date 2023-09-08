@@ -42,11 +42,11 @@ func (WxLoginController) Login(ctx context.Context, req *v2.WxLoginReq) (res *v2
 // 注册接口
 func (WxLoginController) Register(ctx context.Context, req *v2.WxRegisterReq) (res *v2.WxRegisterRes, err error) {
 	// 验证验证码
-	err = logic.WxRegister.VerifyCode(ctx, req.Phone, req.VerifyCode)
-	if err != nil {
-		err = gerror.NewCode(gcode.New(1, "验证码验证失败", err.Error()))
-		return
-	}
+	// err = logic.WxRegister.VerifyCode(ctx, req.Phone, req.VerifyCode)
+	// if err != nil {
+	// 	err = gerror.NewCode(gcode.New(1, "验证码验证失败", err.Error()))
+	// 	return
+	// }
 
 	// 获得微信用户的 openId
 	data, err := logic.WxLogin.WechatLogin(ctx, req.Code)
@@ -61,7 +61,7 @@ func (WxLoginController) Register(ctx context.Context, req *v2.WxRegisterReq) (r
 	}
 
 	// 注册新用户
-	token, err := logic.WxRegister.Register(ctx, req.Phone, req.Nickname, req.AvatarUrl, data.OpenID, req.Gender)
+	token, err := logic.WxRegister.Register(ctx, req.Nickname, req.AvatarUrl, data.OpenID, req.Gender)
 	if err != nil {
 		return nil, err
 	}

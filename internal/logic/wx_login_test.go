@@ -13,7 +13,7 @@ func TestWxRegister(t *testing.T) {
 	defer dropAllTableWithDb()
 	ctx := context.Background()
 	gtest.C(t, func(t *gtest.T) {
-		token, err := logic.WxRegister.Register(ctx, "13867674545", "张三", "", "4444", "男")
+		token, err := logic.WxRegister.Register(ctx, "张三", "", "4444", "男")
 		t.AssertNil(err)
 		t.AssertNE(token, "")
 	})

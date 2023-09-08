@@ -14,6 +14,10 @@ type TenantSelectListReq struct {
 
 type TenantSelectListRes struct {
 	g.Meta `mime:"application/json" example:"string"`
+	Data   []TenantSelectList
+}
+
+type TenantSelectList struct {
 	Id     int    `json:"id"           ` //
 	Name   string `json:"name"         ` //
 	Domain string `json:"domain"       ` //

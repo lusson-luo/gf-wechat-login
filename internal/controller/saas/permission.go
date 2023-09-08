@@ -3,6 +3,7 @@ package controller_saas
 import (
 	"context"
 	v2 "login-demo/api/saas"
+
 	"login-demo/internal/consts"
 	"login-demo/internal/logic"
 	"login-demo/internal/model/do"
@@ -16,24 +17,27 @@ import (
 type PermissionController struct {
 }
 
-func (PermissionController) List(ctx context.Context, req *v2.PermissionListReq) (rep []v2.PermissionListRes, err error) {
-	config, _ := gcfg.New()
-	err = config.MustGet(ctx, "permissionList").Scan(&rep)
+func (PermissionController) List(ctx context.Context, req *v2.PermissionListReq) (rep v2.PermissionListRes, err error) {
+	Config, _ := gcfg.New()
+	err = Config.MustGet(ctx, "permissionList").Scan(&rep.Data)
+	// err = logic.ConfigScan(func(c *gcfg.Config) error {
+	// 	return c.MustGet(ctx, "permissionList").Scan(&rep.Data)
+	// })
 	tenantId, ok := ctx.Value(consts.TenantIDKey).(int)
 	if !ok {
 		err = gerror.NewCode(gcode.New(401, "tenantId 不为空", ""))
 	}
 	if tenantId != 1 {
 		tenantIndex := 0
-		for i, val := range rep {
+		for i, val := range rep.Data {
 			if val.Model == "租户管理" {
 				tenantIndex = i
 			}
 		}
-		tmp := make([]v2.PermissionListRes, len(rep)-1)
-		copy(tmp, rep[:tenantIndex])
-		copy(tmp, rep[tenantIndex+1:])
-		rep = tmp
+		tmp := make([]v2.PermissionList, len(rep.Data)-1)
+		copy(tmp, rep.Data[:tenantIndex])
+		copy(tmp, rep.Data[tenantIndex+1:])
+		rep.Data = tmp
 	}
 	return
 }

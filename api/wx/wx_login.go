@@ -34,13 +34,13 @@ type WxValidCodeRes struct {
 }
 
 type WxRegisterReq struct {
-	g.Meta     `path:"/wx-api/register" tags:"微信小程序鉴权接口" method:"POST" summary:"微信注册"`
-	Code       string `json:"code"`
-	Phone      string `json:"phone"`
-	VerifyCode string `json:"verifyCode"`
-	Gender     string `json:"gender"`
-	Nickname   string `json:"nickname"`
-	AvatarUrl  string `json:"avatarUrl"`
+	g.Meta `path:"/wx-api/register" tags:"微信小程序鉴权接口" method:"POST" summary:"微信注册"`
+	Code   string `json:"code"`
+	// Phone      string `json:"phone"`
+	// VerifyCode string `json:"verifyCode"`
+	Gender    string `json:"gender"`
+	Nickname  string `json:"nickname"`
+	AvatarUrl string `json:"avatarUrl"`
 }
 
 type WxRegisterRes struct {

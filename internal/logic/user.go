@@ -144,9 +144,12 @@ func (*LogicUser) Del(ctx context.Context, id int) (err error) {
 }
 
 func (*LogicUser) Update(ctx context.Context, user do.User) (err error) {
-	// 计算密码哈希值
-	passwordHash := fmt.Sprintf("%x", sha256.Sum256([]byte(user.Password.(string))))
-	user.UpdateAt, user.Password = gtime.Now(), passwordHash
+	if user.Password != nil {
+		// 计算密码哈希值
+		passwordHash := fmt.Sprintf("%x", sha256.Sum256([]byte(user.Password.(string))))
+		user.Password = passwordHash
+	}
+	user.UpdateAt = gtime.Now()
 	rs, err := dao.User.Ctx(ctx).Update(user, "id = ?", user.Id)
 	if err != nil {
 		return gerror.WrapCode(gcode.New(1, "系统异常，修改失败", ""), err)

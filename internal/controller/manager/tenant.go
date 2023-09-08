@@ -21,12 +21,12 @@ type TenantController struct {
 }
 
 // 租户筛选框信息
-func (TenantController) SelectList(ctx context.Context, req *v2.TenantSelectListReq) (res []v2.TenantSelectListRes, err error) {
+func (TenantController) SelectList(ctx context.Context, req *v2.TenantSelectListReq) (res v2.TenantSelectListRes, err error) {
 	model.InitPageReq(&req.PageReq, 1, 10000)
 	tenants, _, err := logic.Tenant.TenantList(ctx, req.PageReq)
-	res = make([]v2.TenantSelectListRes, len(tenants))
+	res.Data = make([]v2.TenantSelectList, len(tenants))
 	for i, tenant := range tenants {
-		res[i] = v2.TenantSelectListRes{
+		res.Data[i] = v2.TenantSelectList{
 			Id:     tenant.Id,
 			Name:   tenant.Name,
 			Domain: tenant.Domain,

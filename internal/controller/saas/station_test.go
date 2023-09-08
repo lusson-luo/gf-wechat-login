@@ -57,8 +57,9 @@ func TestStationAdd(t *testing.T) {
 	// 1. 存在 tenantId，添加成功
 	gtest.C(t, func(t *gtest.T) {
 		_, err := controller.StationController{}.Add(tenantCtx, &v2.StationAddReq{
-			Name:    "充电站A",
-			Address: "北京",
+			Name:     "充电站A",
+			Address:  "北京",
+			ImageUrl: "xx.png",
 		})
 		t.AssertNil(err)
 	})
@@ -80,9 +81,10 @@ func TestStationUpdate(t *testing.T) {
 	// 1. 存在 tenantId，添加成功
 	gtest.C(t, func(t *gtest.T) {
 		_, err := controller.StationController{}.Update(tenantCtx, &v2.StationUpdateReq{
-			Id:      1,
-			Name:    "充电站A",
-			Address: "北京",
+			Id:       1,
+			Name:     "充电站A",
+			Address:  "北京",
+			ImageUrl: "xx.png",
 		})
 		t.AssertNil(err)
 	})
@@ -93,7 +95,7 @@ func TestStationUpdate(t *testing.T) {
 			Name:    "充电站A",
 			Address: "北京",
 		})
-		t.AssertNNil(err)
+		t.AssertNE(err, nil)
 	})
 }
 
@@ -114,6 +116,6 @@ func TestStationDel(t *testing.T) {
 		_, err := controller.StationController{}.Del(context.Background(), &v2.StationDelReq{
 			Id: 10,
 		})
-		t.AssertNNil(err)
+		t.AssertNE(err, nil)
 	})
 }

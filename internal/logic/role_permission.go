@@ -8,6 +8,7 @@ import (
 
 	"github.com/gogf/gf/v2/errors/gcode"
 	"github.com/gogf/gf/v2/errors/gerror"
+	"github.com/gogf/gf/v2/os/gcfg"
 	"github.com/gogf/gf/v2/os/gtime"
 )
 
@@ -17,6 +18,11 @@ type LogicRolePermission struct {
 var (
 	RolePermission = LogicRolePermission{}
 )
+
+func ConfigScan(a func(*gcfg.Config) error) error {
+	Config, _ := gcfg.New()
+	return a(Config)
+}
 
 func (*LogicRolePermission) Bind(ctx context.Context, rolePermission *do.RolePermission) (err error) {
 	rolePermission.UpdateAt = gtime.Now()

@@ -58,6 +58,7 @@ func (c WxChargeController) StationList(ctx context.Context, req *v2.WxStationLi
 			Address:    station.Address,
 			Coordinate: station.Coordinate,
 			Distance:   distance,
+			ImageUrl:   station.ImageUrl,
 			CreateAt:   station.CreateAt.Time,
 			UpdateAt:   station.UpdateAt.Time,
 		}
@@ -201,5 +202,37 @@ func (c WxChargeController) PriceList(ctx context.Context, req *v2.WXPriceListRe
 		}
 	}
 	pageRes.List, pageRes.PageNo, pageRes.PageSize, pageRes.TotalCount = res, req.PageNo, req.PageSize, count
+	return
+}
+
+// 个人头像上传
+func (WxChargeController) UploadAvatar(ctx context.Context, req *v2.WXUploadAvatarReq) (res *v2.WXUploadAvatarRes, err error) {
+	err, _, fileUrl := logic.File.FileUpload(ctx, req.File)
+	if err != nil {
+		return
+	}
+	// 获得当前用户
+	currentUser, err := logic.User.GetCurrentUser(ctx)
+	if err != nil {
+		return
+	}
+	err = logic.WxUser.Update(ctx, do.WxUser{
+		UserId:    currentUser.Id,
+		AvatarUrl: fileUrl,
+	})
+	return
+}
+
+// 修改个人昵称
+func (WxChargeController) UpdateNickname(ctx context.Context, req *v2.WXUpdateNicknameReq) (res *v2.WXUpdateNicknameRes, err error) {
+	// 获得当前用户
+	currentUser, err := logic.User.GetCurrentUser(ctx)
+	if err != nil {
+		return
+	}
+	err = logic.User.Update(ctx, do.User{
+		Id:       currentUser.Id,
+		Nickname: req.NewNickname,
+	})
 	return
 }

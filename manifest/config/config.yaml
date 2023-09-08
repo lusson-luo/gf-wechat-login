@@ -15,7 +15,7 @@ database:
 
 wechat:
   appId: wx974ca7be50e0f1cd
-  appSecret: 0bc5f75f20de94a624f823b08d9fdc9b
+  appSecret: xxx
   
 # 管理员初始化管理员账号和密码，只有第一次有效
 admin:
@@ -111,4 +111,17 @@ permissionList:
       - key: ScreenView
         name: '数据大屏展示'
   
-    
+# 文件存储配置
+storage:
+  local:
+    path: ./tempFile
+    domain: http://127.0.0.1:8000
+  s3:
+    enabled: true
+    endpoint: s3.ap-southeast-1.qiniucs.com
+    accessKeyID: xx
+    secretAccessKey: xxx-WeCGHWX8D0b
+    useSSL: true
+    bucketName: tuboshu-static3
+    location: ap-southeast-1
+    accessUrl: https://static.xxx.top

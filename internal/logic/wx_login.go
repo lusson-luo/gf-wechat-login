@@ -164,11 +164,11 @@ func (s *WxRegisterService) VerifyCode(ctx context.Context, phone, validcode str
 }
 
 // Register 用于注册新用户
-func (s *WxRegisterService) Register(ctx context.Context, phone, nickname, avatarUrl, openid, gender string) (token string, err error) {
+func (s *WxRegisterService) Register(ctx context.Context, nickname, avatarUrl, openid, gender string) (token string, err error) {
 	err = g.DB().Transaction(ctx, func(ctx context.Context, tx gdb.TX) error {
 		// 添加新用户
 		user := &do.User{
-			Passport: phone,
+			Passport: openid,
 			Nickname: nickname,
 			Password: "123456",
 			TenantId: consts.DefaultTenantValue,
@@ -182,7 +182,6 @@ func (s *WxRegisterService) Register(ctx context.Context, phone, nickname, avata
 		wxuser := do.WxUser{
 			UserId:    user.Id,
 			OpenId:    openid,
-			PhoneNo:   phone,
 			AvatarUrl: avatarUrl,
 			Nickname:  nickname,
 			Gender:    gender,
@@ -214,7 +213,7 @@ func (s *WxRegisterService) Register(ctx context.Context, phone, nickname, avata
 	}
 
 	// 生成 JWT token
-	token, err = jwt.GenerateToken(ctx, phone)
+	token, err = jwt.GenerateToken(ctx, openid)
 	if err != nil {
 		return "", err
 	}
