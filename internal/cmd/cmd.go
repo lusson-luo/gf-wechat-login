@@ -57,10 +57,6 @@ var (
 						group.POST("", new(saasController.Login).Refresh)
 						group.Bind(
 							&saasController.UserController{},
-							&saasController.StationController{},
-							&saasController.PileController{},
-							&saasController.ChargeOrderController{},
-							&saasController.ChargePriceController{},
 							&saasController.UserPayController{},
 							&saasController.RoleController{},
 							&saasController.PermissionController{},
@@ -80,10 +76,6 @@ var (
 						group.POST("", new(managerController.TenantController).Del)
 						group.Bind(
 							&saasController.UserController{},
-							&saasController.StationController{},
-							&saasController.PileController{},
-							&saasController.ChargeOrderController{},
-							&saasController.ChargePriceController{},
 							&saasController.UserPayController{},
 							&saasController.RoleController{},
 							&saasController.PermissionController{},
@@ -95,17 +87,11 @@ var (
 				group.Bind(
 					&wxController.WxLoginController{},
 				)
-				group.GET("", new(wxController.WxChargeController).StationList)
-				group.GET("", new(wxController.WxChargeController).PileList)
 				group.Group("", func(group *ghttp.RouterGroup) {
 					group.Middleware(middleware.Auth)
-					group.POST("", new(wxController.WxChargeController).StartCharge)
-					group.POST("", new(wxController.WxChargeController).MyChargeOrders)
-					group.POST("", new(wxController.WxChargeController).AboutMe)
-					group.POST("", new(wxController.WxChargeController).StopCharge)
-					group.POST("", new(wxController.WxChargeController).PriceList)
-					group.POST("", new(wxController.WxChargeController).UploadAvatar)
-					group.POST("", new(wxController.WxChargeController).UpdateNickname)
+					group.POST("", new(wxController.WxUserController).AboutMe)
+					group.POST("", new(wxController.WxUserController).UploadAvatar)
+					group.POST("", new(wxController.WxUserController).UpdateNickname)
 				})
 			})
 

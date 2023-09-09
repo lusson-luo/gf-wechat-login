@@ -56,7 +56,7 @@ func (client *S3Client) UploadFile(ctx context.Context, bucketName, location, ob
 	if err != nil {
 		// Check to see if we already own this bucket (which happens if you run this twice)
 		exists, errBucketExists := minioClient.BucketExists(ctx, bucketName)
-		glog.Infof(ctx, "桶是否存在 %v，err=\n", exists, errBucketExists)
+		glog.Infof(ctx, "桶是否存在 %v，err=%v\n", exists, errBucketExists)
 		if exists {
 			glog.Infof(ctx, "We already own %s\n", bucketName)
 		}

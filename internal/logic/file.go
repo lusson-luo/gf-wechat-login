@@ -79,7 +79,7 @@ func (*FileLogic) FileUpload(ctx context.Context, file *ghttp.UploadFile) (err e
 	filename = newFilename
 	fileUrl = localUrl + "/" + newFilename
 
-	glog.Debugf(ctx, "本地访问地址", fileUrl)
+	glog.Debugf(ctx, "本地访问地址：%s", fileUrl)
 
 	if config.MustGet(ctx, "storage.s3.enabled", false).Bool() {
 		endpoint := config.MustGet(ctx, "storage.s3.endpoint").String()

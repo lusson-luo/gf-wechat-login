@@ -28,7 +28,7 @@ func (*UserPayLogic) UserPayList(ctx context.Context, page model.PageReq) (userP
 }
 
 func (*UserPayLogic) UserPay(ctx context.Context, userPay do.PayRecord) (err error) {
-	tx, err := dao.ChargeOrder.DB().Begin(ctx)
+	tx, err := dao.User.DB().Begin(ctx)
 	if err != nil {
 		return
 	}
